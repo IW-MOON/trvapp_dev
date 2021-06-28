@@ -1,0 +1,23 @@
+version: "3"
+services:
+
+  spring1:
+    build: .
+    image: spring
+    container_name: dev
+    ports:
+      - 8081:8081
+    volumes:
+      - ./:/root/
+    environment:
+      active: dev
+  spring2:
+    build: .
+    image: spring
+    container_name: prod
+    ports:
+      - 8082:8082
+    volumes:
+      - ./:/root/
+    environment:
+      active: prod
