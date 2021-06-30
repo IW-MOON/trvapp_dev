@@ -1,5 +1,5 @@
 #!/bin/bash
-
+source ../../deploy_env.sh
 # Crawl current connected port of WAS
 TARGET_PORT=0
 echo ${DEPLOYMENT_ACTIVE}

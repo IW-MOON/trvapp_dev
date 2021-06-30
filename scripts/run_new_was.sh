@@ -2,11 +2,12 @@
 #
 # !/bin/bash
 #
+source ../../deploy_env.sh
 CURRENT_PORT=$(cat /etc/nginx/conf.d/service_url.inc | grep -Po '[0-9]+' | tail -1)
 TARGET_PORT=0
 
 echo "> Current port of running WAS is ${CURRENT_PORT}."
-echo ${DEPLOYMENT_GROUP_NAME}
+echo ${DEPLOYMENT_ACTIVE}
 if [ ${DEPLOYMENT_ACTIVE} -eq "dev" ]; then
   docker-compose up -f ../docker-compose.yml -d
 elif [ ${DEPLOYMENT_ACTIVE} -eq "prod" ]; then
