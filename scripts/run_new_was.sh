@@ -7,6 +7,7 @@ ABSDIR=$(dirname $ABSPATH)
 
 cd ${ABSDIR}
 cd ../../
+pwd
 source ./deploy_env.sh
 
 CURRENT_PORT=$(cat /etc/nginx/conf.d/service_url.inc | grep -Po '[0-9]+' | tail -1)
