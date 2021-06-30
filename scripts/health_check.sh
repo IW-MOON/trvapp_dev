@@ -5,9 +5,9 @@ source /home/ubuntu/app/trvapp/deploy_env.sh
 TARGET_PORT=0
 echo ${DEPLOYMENT_ACTIVE}
 # Toggle port Number
-if [${DEPLOYMENT_ACTIVE}  -eq "dev"]; then
+if [${DEPLOYMENT_ACTIVE}  == "dev"]; then
   TARGET_PORT=8082
-elif [${DEPLOYMENT_ACTIVE}  -eq "prod"]; then
+elif [${DEPLOYMENT_ACTIVE}  == "prod"]; then
   TARGET_PORT=8081
 else
   echo "> No WAS is connected to nginx"
