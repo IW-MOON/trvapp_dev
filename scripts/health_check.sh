@@ -2,7 +2,7 @@
 
 # Crawl current connected port of WAS
 TARGET_PORT=0
-
+echo ${DEPLOYMENT_ACTIVE}
 # Toggle port Number
 if [${DEPLOYMENT_ACTIVE}  -eq "dev"]; then
   TARGET_PORT=8082
