@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source /home/ubuntu/trvapp/deploy_env.sh
+source /home/ubuntu/app/trvapp/deploy_env.sh
 # Crawl current connected port of WAS
 TARGET_PORT=0
 echo ${DEPLOYMENT_ACTIVE}

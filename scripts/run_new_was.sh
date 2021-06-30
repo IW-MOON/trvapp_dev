@@ -3,7 +3,7 @@
 # !/bin/bash
 #
 
-source /home/ubuntu/trvapp/deploy_env.sh
+source /home/ubuntu/app/trvapp/deploy_env.sh
 
 CURRENT_PORT=$(cat /etc/nginx/conf.d/service_url.inc | grep -Po '[0-9]+' | tail -1)
 TARGET_PORT=0
@@ -11,9 +11,9 @@ TARGET_PORT=0
 echo "> Current port of running WAS is ${CURRENT_PORT}."
 echo ${DEPLOYMENT_ACTIVE}
 if [ ${DEPLOYMENT_ACTIVE} -eq "dev" ]; then
-  docker-compose up -f /home/ubuntu/trvapp/trvapp/docker-compose.yml -d
+  docker-compose up -f /home/ubuntu/app/trvapp/trvapp/docker-compose.yml -d
 elif [ ${DEPLOYMENT_ACTIVE} -eq "prod" ]; then
-  docker-compose up -f /home/ubuntu/trvapp/trvapp_prod/docker-compose.yml -d
+  docker-compose up -f /home/ubuntu/app/trvapp/trvapp_prod/docker-compose.yml -d
 else
   echo "> DEPLOYMENT_ACTIVE is not correct "
 fi
