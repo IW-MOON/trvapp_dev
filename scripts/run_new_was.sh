@@ -2,7 +2,8 @@
 #
 # !/bin/bash
 #
-source ../../deploy_env.sh
+cd ../../
+source ./deploy_env.sh
 CURRENT_PORT=$(cat /etc/nginx/conf.d/service_url.inc | grep -Po '[0-9]+' | tail -1)
 TARGET_PORT=0
 
