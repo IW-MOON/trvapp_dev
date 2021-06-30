@@ -4,9 +4,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
-@PropertySource( value = "file:./application.yml", ignoreResourceNotFound = true)
+@RestController
+//@PropertySource( value = "file:./application.yml", ignoreResourceNotFound = true)
 public class HelloController {
 
     @Value("${logging-module.version}")
