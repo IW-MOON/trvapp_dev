@@ -6,9 +6,9 @@ TARGET_PORT=0
 echo ${DEPLOYMENT_ACTIVE}
 # Toggle port Number
 if [ ${DEPLOYMENT_ACTIVE} == "dev" ]; then
-  TARGET_PORT=8082
-elif [ ${DEPLOYMENT_ACTIVE} == "prod" ]; then
   TARGET_PORT=8081
+elif [ ${DEPLOYMENT_ACTIVE} == "prod" ]; then
+  TARGET_PORT=8082
 else
   echo "> No WAS is connected to nginx"
   exit 1

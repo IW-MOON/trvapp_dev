@@ -11,9 +11,9 @@ TARGET_PORT=0
 echo "> Current port of running WAS is ${CURRENT_PORT}."
 echo ${DEPLOYMENT_ACTIVE}
 if [ ${DEPLOYMENT_ACTIVE} == "dev" ]; then
-  docker-compose up -f /home/ubuntu/app/trvapp/trvapp/docker-compose.yml -d
+  docker-compose -f /home/ubuntu/app/trvapp/trvapp/docker-compose.yml up -d
 elif [ ${DEPLOYMENT_ACTIVE} == "prod" ]; then
-  docker-compose up -f /home/ubuntu/app/trvapp/trvapp_prod/docker-compose.yml -d
+  docker-compose -f /home/ubuntu/app/trvapp/trvapp_prod/docker-compose.yml up -d
 else
   echo "> DEPLOYMENT_ACTIVE is not correct "
 fi
