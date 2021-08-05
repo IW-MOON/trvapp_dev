@@ -7,18 +7,18 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-//@PropertySource( value = "file:./application.yml", ignoreResourceNotFound = true)
+////@PropertySource( value = "file:./application.yml", ignoreResourceNotFound = true)
 public class HelloController {
 
-    @Value("${logging-module.version}")
-    private String version;
-
-    @GetMapping("/")
-    public String version() {
-        return String.format("Project Version : %s", version);
-
-    }
-
+//    @Value("${logging-module.version}")
+//    private String version;
+//
+//    @GetMapping("/")
+//    public String version() {
+//        return String.format("Project Version : %s", version);
+//
+//    }
+//
     @GetMapping("/health")
     public String checkHealth() {
         return "healthy";
