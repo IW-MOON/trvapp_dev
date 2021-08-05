@@ -6,6 +6,7 @@ files:
   - source: /
     destination: /home/ubuntu/app/trvapp/trvapp # 프로젝트 이름
     overwrite: yes
+file_exists_behavior: OVERWRITE
 
 permissions:
   - object: /
@@ -24,4 +25,4 @@ hooks:
       runas: ubuntu
     #- location: scripts/switch.sh
     #  timeout: 180
-    #  runas: ubuntu
+    #cd bu  runas: ubuntu
