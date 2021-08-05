@@ -23,4 +23,9 @@ public class MainController {
         System.out.println("ymoymo");
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    @GetMapping("/health")
+    public String checkHealth() {
+        return "healthy";
+    }
 }
