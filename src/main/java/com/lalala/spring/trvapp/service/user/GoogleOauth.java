@@ -116,6 +116,7 @@ public class GoogleOauth implements SocialOauth{
             log.info(userId);
             log.debug(email);
             System.out.println("userId = " + userId);
+            log.info("docker-compose");
 
             googleUser = User.builder()
                     .socialLoginType(SocialLoginType.GOOGLE)
