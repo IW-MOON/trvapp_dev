@@ -19,9 +19,9 @@ public class HelloController {
 //
 //    }
 //
-    @GetMapping("/health")
-    public String checkHealth() {
-        return "healthy";
-    }
+//    @GetMapping("/health")
+//    public String checkHealth() {
+//        return "healthy";
+//    }
 
 }
