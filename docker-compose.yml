@@ -5,7 +5,7 @@ services:
     image: spring
     container_name: dev
     ports:
-      - 8090:8081
+      - "8090:8081"
     volumes:
       - ./build/libs/:/root/
     environment:
