@@ -36,7 +36,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class GoogleOauth implements SocialOauth {
 
-    @Value("${server.protocol}://${server.out-address}:${server.port}/user/auth/google")
+    @Value("${server.protocol}://${server.out-address}:${server.out-port}/user/auth/google")
     private String redirectUrl;
     @Value("${external.auth.google.client_id}")
     private String clientId;
