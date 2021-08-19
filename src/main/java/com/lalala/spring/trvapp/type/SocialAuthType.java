@@ -1,7 +1,6 @@
 package com.lalala.spring.trvapp.type;
 
-public enum SocialLoginType {
-
+public enum SocialAuthType {
     GOOGLE,
     APPLE,
     FACEBOOK,

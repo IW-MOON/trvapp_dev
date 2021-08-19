@@ -3,7 +3,7 @@ package com.lalala.spring.trvapp.model;
 import lombok.Data;
 
 @Data
-public class GoogleOAuthResponse {
+public class OAuthResponse {
 
     private String accessToken;
     private String expiresIn;

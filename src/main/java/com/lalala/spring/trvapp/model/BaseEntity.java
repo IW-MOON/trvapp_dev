@@ -1,21 +1,15 @@
 package com.lalala.spring.trvapp.model;
 
 
-import lombok.AllArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
 import javax.persistence.Column;
 import javax.persistence.EntityListeners;
 import javax.persistence.MappedSuperclass;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 
 @Getter
 @MappedSuperclass
@@ -30,12 +24,14 @@ public abstract class BaseEntity {
 //    @LastModifiedBy
 //    private String sysChngrId;
 
-    @Column(name = "SYS_CRET_DTM", length = 14, nullable = false, updatable = false)
+    @Column(name = "SYS_CRET_DTM", nullable = false, updatable = false)
     @CreatedDate
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     private LocalDateTime sysCretDtm ;
 
-    @Column(name = "SYS_CHNG_DTM", length = 14)
+    @Column(name = "SYS_CHNG_DTM")
     @LastModifiedDate
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     private LocalDateTime sysChngDtm ;
 
 }

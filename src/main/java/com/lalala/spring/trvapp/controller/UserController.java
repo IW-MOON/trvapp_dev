@@ -1,27 +1,17 @@
 package com.lalala.spring.trvapp.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
-import com.google.api.client.http.HttpTransport;
-import com.google.api.client.http.javanet.NetHttpTransport;
-import com.google.api.client.json.JsonFactory;
-import com.google.api.client.json.jackson2.JacksonFactory;
-import com.lalala.spring.trvapp.model.GoogleOAuthRequest;
-import com.lalala.spring.trvapp.model.GoogleOAuthResponse;
-import com.lalala.spring.trvapp.service.user.OauthService;
-import com.lalala.spring.trvapp.type.SocialLoginType;
+
+
+import com.lalala.spring.trvapp.model.ServiceResponse;
+import com.lalala.spring.trvapp.service.user.UserService;
+import com.lalala.spring.trvapp.type.SocialAuthType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import javax.servlet.http.HttpServletRequest;
 
-import java.io.IOException;
-import java.security.GeneralSecurityException;
-import java.util.Collections;
-import java.util.HashMap;
 
 @Slf4j
 @RestController
@@ -30,19 +20,38 @@ import java.util.HashMap;
 @RequiredArgsConstructor
 public class UserController {
 
-    private final OauthService oauthService;
+    private final UserService userService;
 
-    @CrossOrigin(origins = "http://localhost:8080")
+    // 로그인
+    //CrossOrigin(origins = "http://localhost:8080")
     @GetMapping(value = "/auth/{socialLoginType}")
-    public ResponseEntity<GoogleOAuthResponse> callback(
-            @PathVariable(name = "socialLoginType") SocialLoginType socialLoginType,
-            @RequestParam(name = "code") String code) {
-
-        System.out.println("code = " + code);
-        log.info("callback code : {}", code);
-
-        return oauthService.requestAccessToken(socialLoginType, code);
+    public ResponseEntity<ServiceResponse> callback(
+            @PathVariable(name = "socialLoginType") SocialAuthType socialAuthType,
+            ServiceResponse serviceResponse
+            ) {
+        return userService.auth(socialAuthType, serviceResponse);
     }
 
+    @GetMapping(value = "/auth/{socialLoginType}/refresh_token")
+    public ResponseEntity<ServiceResponse> refreshToken(
+            @PathVariable(name = "socialLoginType") SocialAuthType socialAuthType,
+            ServiceResponse serviceResponse
+    ) {
 
+        return userService.refreshToken(socialAuthType, serviceResponse);
+    }
+    @GetMapping(value = "/check")
+    public ResponseEntity check(
+            //@RequestParam(name = "access_token") String access_token, @RequestParam(name = "refresh_token") String refresh_token
+            HttpServletRequest request
+
+    ) {
+            //return responseEntity.getBody();
+        System.out.println("access_token = " + request.getAttribute("access_token"));
+        System.out.println("refresh_token = " + request.getAttribute("refresh_token"));
+
+         return new ResponseEntity<>(HttpStatus.OK);
+
+    }
 }
+

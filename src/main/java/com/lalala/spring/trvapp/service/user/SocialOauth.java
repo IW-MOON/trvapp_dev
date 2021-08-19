@@ -1,10 +1,11 @@
 package com.lalala.spring.trvapp.service.user;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.lalala.spring.trvapp.model.GoogleOAuthResponse;
+import com.lalala.spring.trvapp.model.OAuthResponse;
+import com.lalala.spring.trvapp.model.ServiceResponse;
 import com.lalala.spring.trvapp.model.User;
-import com.lalala.spring.trvapp.type.SocialLoginType;
-import org.springframework.http.ResponseEntity;
+import com.lalala.spring.trvapp.type.SocialAuthType;
+
+import java.util.Optional;
 
 public interface SocialOauth {
 
@@ -19,13 +20,16 @@ public interface SocialOauth {
      * @param code API Server 에서 받아온 code
      * @return API 서버로 부터 응답받은 Json 형태의 결과를 string으로 반
      */
-    ResponseEntity<GoogleOAuthResponse> requestAccessToken(String code);
+    Optional<OAuthResponse> requestAccessToken(ServiceResponse serviceResponse);
+    Optional<OAuthResponse> refreshAccessToken(ServiceResponse serviceResponse);
 
     User getUserInfo(String token);
 
-    default SocialLoginType type() {
+    default SocialAuthType type() {
         if (this instanceof GoogleOauth) {
-            return SocialLoginType.GOOGLE;
+            return SocialAuthType.GOOGLE;
+        } else if (this instanceof AppleOauth) {
+            return SocialAuthType.APPLE;
         }
 //        else if (this instanceof FacebookOauth) {
 //            return SocialLoginType.FACEBOOK;
