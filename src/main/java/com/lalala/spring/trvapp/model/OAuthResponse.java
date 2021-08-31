@@ -11,4 +11,8 @@ public class OAuthResponse {
     private String scope;
     private String tokenType;
     private String idToken;
+    private String code;
+    private String state;
+    private Object user;
+
 }

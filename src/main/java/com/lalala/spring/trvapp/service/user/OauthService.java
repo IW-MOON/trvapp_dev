@@ -48,10 +48,10 @@ public class OauthService {
                 .orElseThrow(() -> new IllegalArgumentException("알 수 없는 SocialLoginType 입니다."));
     }
 
-    public User getUserInfo(SocialAuthType socialAuthType, String token){
+    public User getUserInfo(SocialAuthType socialAuthType, OAuthResponse oAuthResponse){
 
         SocialOauth socialOauth = this.findSocialOauthByType(socialAuthType);
-        return socialOauth.getUserInfo(token);
+        return socialOauth.getUserInfo(oAuthResponse);
     }
 
 }

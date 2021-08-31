@@ -34,7 +34,7 @@ public class UserService {
         Optional<OAuthResponse> result = oauthService.requestAccessToken(socialAuthType, serviceResponse);
         return result.map(r -> {
 
-            User user = oauthService.getUserInfo(socialAuthType, r.getIdToken());
+            User user = oauthService.getUserInfo(socialAuthType, r);
             log.debug(user.toString());
 
             Optional<User> optFindUser =

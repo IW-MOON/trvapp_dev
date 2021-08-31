@@ -1,9 +1,6 @@
 package com.lalala.spring.trvapp.service.user;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.HttpTransport;
@@ -11,7 +8,7 @@ import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.lalala.spring.trvapp.exception.ServerRuntimeException;
-import com.lalala.spring.trvapp.exception.UnAuthorizedException;
+import com.lalala.spring.trvapp.helper.HttpClientUtils;
 import com.lalala.spring.trvapp.model.OAuthResponse;
 import com.lalala.spring.trvapp.model.ServiceResponse;
 import com.lalala.spring.trvapp.model.User;
@@ -19,10 +16,7 @@ import com.lalala.spring.trvapp.type.SocialAuthType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -46,6 +40,8 @@ public class GoogleOauth implements SocialOauth {
     private String tokenBaseUrl;
 
 
+    private final HttpClientUtils httpClientUtils;
+
     @Override
     public String getOauthRedirectURL() {
         return null;
@@ -54,9 +50,6 @@ public class GoogleOauth implements SocialOauth {
     @Override
     public Optional<OAuthResponse> requestAccessToken(ServiceResponse serviceResponse) {
 
-        RestTemplate restTemplate = new RestTemplate();
-
-        log.info(redirectUrl);
         Map<String, Object> params = new HashMap<>();
         params.put("code", serviceResponse.getCode());
         params.put("client_id", clientId);
@@ -64,7 +57,7 @@ public class GoogleOauth implements SocialOauth {
         params.put("redirect_uri", redirectUrl);
         params.put("grant_type", "authorization_code");
 
-        return getGoogleOAuthResponseResponseEntity(params);
+        return httpClientUtils.getPostOAuthResponse(params, tokenBaseUrl);
     }
 
     @Override
@@ -77,12 +70,38 @@ public class GoogleOauth implements SocialOauth {
         params.put("refresh_token", serviceResponse.getRefreshToken());
         params.put("grant_type", "refresh_token");
 
-        return getGoogleOAuthResponseResponseEntity(params);
+        return httpClientUtils.getPostOAuthResponse(params, tokenBaseUrl);
     }
 
-    @Override
-    public User getUserInfo(String token) {
+//    private Optional<OAuthResponse> getOAuthResponse(Map<String, Object> params) {
+//        Optional<ResponseEntity<String>> optionalResponseEntity = httpClientUtils.doPostResponseEntity(params, tokenBaseUrl);
+//
+//        ObjectMapper mapper = new ObjectMapper();
+//        mapper.setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE);
+//        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+//
+//        return optionalResponseEntity.map(
+//                responseEntity -> {
+//                    try {
+//                        if (responseEntity.getStatusCode() == HttpStatus.OK) {
+//                            OAuthResponse oAuthResponse = mapper.readValue(responseEntity.getBody(), new TypeReference<OAuthResponse>() {
+//                            });
+//                            System.out.println("result = " + oAuthResponse);
+//                            return Optional.ofNullable(oAuthResponse);
+//                        }
+//                    } catch (Exception e){
+//                        throw new ServerRuntimeException();
+//                    }
+//                    throw new UnAuthorizedException();
+//                }
+//
+//        ).orElseThrow(UnAuthorizedException::new);
+//    }
 
+    @Override
+    public User getUserInfo(OAuthResponse oAuthResponse) {
+
+        String idToken = oAuthResponse.getIdToken();
         HttpTransport transport = new NetHttpTransport();
         JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
 
@@ -95,8 +114,8 @@ public class GoogleOauth implements SocialOauth {
         String email = null;
 
         try {
-            GoogleIdToken idToken = verifier.verify(token);
-            GoogleIdToken.Payload payload = idToken.getPayload();
+            GoogleIdToken googleIdToken = verifier.verify(idToken);
+            GoogleIdToken.Payload payload = googleIdToken.getPayload();
 
             log.debug(payload.toString());
             userId = payload.getSubject();
@@ -117,32 +136,4 @@ public class GoogleOauth implements SocialOauth {
         return googleUser;
     }
 
-    private Optional<OAuthResponse> getGoogleOAuthResponseResponseEntity(Map<String, Object> params) {
-
-        RestTemplate restTemplate = new RestTemplate();
-
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE);
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-
-        OAuthResponse result = null;
-        try {
-
-            ResponseEntity<String> responseEntity =
-                    restTemplate.postForEntity(tokenBaseUrl, params, String.class);
-
-            System.out.println("responseEntity.getStatusCode() = " + responseEntity.getStatusCode());
-
-            if (responseEntity.getStatusCode() == HttpStatus.OK) {
-                result = mapper.readValue(responseEntity.getBody(), new TypeReference<OAuthResponse>() {
-                });
-                System.out.println("result = " + result);
-
-            }
-
-        } catch (Exception e) {
-            throw new UnAuthorizedException();
-        }
-        return Optional.ofNullable(result);
-    }
 }

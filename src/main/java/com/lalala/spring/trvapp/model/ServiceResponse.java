@@ -16,5 +16,6 @@ public class ServiceResponse {
     private String accessToken;
     private String refreshToken;
     private String token;
+    private String clientSecret;
 
 }
