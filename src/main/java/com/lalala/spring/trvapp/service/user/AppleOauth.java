@@ -133,7 +133,7 @@ public class AppleOauth implements SocialOauth{
         try {
             SignedJWT signedJWT = SignedJWT.parse(idToken);
             JWTClaimsSet payload = signedJWT.getJWTClaimsSet();
-            log.debug(payload.toString());
+            log.info(payload.toString());
             // EXP
             Date currentTime = new Date(System.currentTimeMillis());
             if (!currentTime.before(payload.getExpirationTime())) {
