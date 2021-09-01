@@ -1,12 +1,17 @@
 package com.lalala.spring.trvapp.model;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
+@JsonNaming(PropertyNamingStrategy.LowerCaseStrategy.class)
 public class ServiceResponse {
 
     private String state;
@@ -17,5 +22,6 @@ public class ServiceResponse {
     private String refreshToken;
     private String token;
     private String clientSecret;
+
 
 }
