@@ -1,5 +1,6 @@
 package com.lalala.spring.trvapp.helper;
 
+import com.lalala.spring.trvapp.type.SocialAuthType;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
@@ -24,13 +25,18 @@ public class JwtTokenProvider {
     @Value("${token.secret-key}")
     private String secretKey;
 
-    public String encodeJwtToken(String accessToken, String refreshToken) {
+    public String encodeJwtToken(SocialAuthType socialAuthType,  String accessToken, String refreshToken) {
 
         String jwt = null;
         try {
             Date now = new Date();
-            //long nonce = Long.valueOf(tokenRequest.getNonce()) , expTime = 1800000L;	// 유효시간 : 30m
-            long expTime = 3600000L;	// 유효시간 : 30m
+            long expTime;
+            if (socialAuthType == SocialAuthType.APPLE){
+                expTime = 3600000L * 24;	// 유효시간 : 1DAY
+            } else {
+                expTime = 3600000L;	// 유효시간 : 1H
+            }
+
             SecretKey key = Keys.hmacShaKeyFor(secretKey.getBytes("UTF-8"));
 
             Map<String, Object> header = new HashMap<>();

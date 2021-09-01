@@ -231,7 +231,7 @@ public class AppleOauth implements SocialOauth{
             JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
                     .issuer(teamId)
                     .issueTime(now)
-                    .expirationTime(new Date(now.getTime() + 3600000))
+                    .expirationTime(new Date(now.getTime() + (3600000 * 24)))
                     .audience(iss)
                     .subject(clientId).build();
 

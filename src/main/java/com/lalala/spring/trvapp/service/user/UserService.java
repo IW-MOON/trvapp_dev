@@ -63,7 +63,7 @@ public class UserService {
 
             System.out.println("r = " + oAuthResponse.toString());
 
-            String jwt = jwtTokenProvider.encodeJwtToken(oAuthResponse.getAccessToken(), oAuthResponse.getRefreshToken());
+            String jwt = jwtTokenProvider.encodeJwtToken(socialAuthType, oAuthResponse.getAccessToken(), oAuthResponse.getRefreshToken());
             return new ResponseEntity<ServiceResponse>(
                     ServiceResponse.builder()
                             .token(jwt)
@@ -81,7 +81,7 @@ public class UserService {
         Optional<OAuthResponse> optOAuthResponse = oauthService.refreshAccessToken(socialAuthType, serviceResponse);
         return optOAuthResponse.map(oAuthResponse -> {
 
-            String jwt = jwtTokenProvider.encodeJwtToken(oAuthResponse.getAccessToken(), oAuthResponse.getRefreshToken());
+            String jwt = jwtTokenProvider.encodeJwtToken(socialAuthType, oAuthResponse.getAccessToken(), oAuthResponse.getRefreshToken());
             return new ResponseEntity<ServiceResponse>(
                     ServiceResponse.builder()
                             .token(jwt)
