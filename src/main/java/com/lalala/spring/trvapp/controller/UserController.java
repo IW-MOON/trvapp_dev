@@ -33,7 +33,7 @@ public class UserController {
     @RequestMapping( value = "/auth/{socialLoginType}", method = {RequestMethod.GET, RequestMethod.POST})
     public ResponseEntity<ServiceResponse> callback(
             @PathVariable(name = "socialLoginType") SocialAuthType socialAuthType,
-            Map<String, Object> responseMap
+            @RequestParam Map<String, Object> responseMap
             ) {
 
         log.info(responseMap.toString());
