@@ -15,7 +15,7 @@ echo "> Current port of running WAS is ${CURRENT_PORT}."
 echo ${DEPLOYMENT_ACTIVE}
 if [ ${DEPLOYMENT_ACTIVE} == "dev" ]; then
   cp /home/ubuntu/app/trvapp/application-dev.yml /home/ubuntu/app/trvapp/trvapp/build/libs/application-dev.yml
-  cp /home/ubuntu/app/trvapp/keystore.p12 /home/ubuntu/app/trvapp/trvapp/build/libs/keystore.p12
+  cp /home/ubuntu/app/trvapp/AuthKey_555KUM5BUR.p8 /home/ubuntu/app/trvapp/trvapp/build/libs/AuthKey_555KUM5BUR.p8
   docker-compose -f /home/ubuntu/app/trvapp/trvapp/docker-compose.yml up -d --force-recreate
 elif [ ${DEPLOYMENT_ACTIVE} == "prod" ]; then
   cp /home/ubuntu/app/trvapp/trvapp/build/libs/* /home/ubuntu/app/trvapp/trvapp_prod/
