@@ -28,6 +28,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
+import javax.crypto.interfaces.PBEKey;
 import java.io.FileReader;
 import java.io.IOException;
 import java.security.KeyFactory;
@@ -174,7 +175,9 @@ public class AppleOauth implements SocialOauth{
         mapper.setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE);
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
-        Optional<ResponseEntity<String>> result =  httpClientUtils.doGetResponseEntity(null, publicKeyUrl);
+        Map<String, Object> map = new LinkedHashMap<>();
+
+        Optional<ResponseEntity<String>> result =  httpClientUtils.doGetResponseEntity(map, publicKeyUrl);
         return result.map(
             responseEntity -> {
 
