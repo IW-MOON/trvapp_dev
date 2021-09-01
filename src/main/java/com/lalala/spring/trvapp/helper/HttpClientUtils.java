@@ -30,6 +30,7 @@ public class HttpClientUtils {
             System.out.println("responseEntity.getStatusCode() = " + responseEntity.getStatusCode());
 
         } catch (Exception e) {
+            e.printStackTrace();
             throw new UnAuthorizedException();
         }
         return Optional.ofNullable(responseEntity);
@@ -70,6 +71,7 @@ public class HttpClientUtils {
                             return Optional.ofNullable(oAuthResponse);
                         }
                     } catch (Exception e){
+                        e.printStackTrace();
                         throw new ServerRuntimeException();
                     }
                     throw new UnAuthorizedException();
