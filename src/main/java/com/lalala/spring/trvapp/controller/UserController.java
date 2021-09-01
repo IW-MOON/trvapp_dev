@@ -35,6 +35,8 @@ public class UserController {
             @PathVariable(name = "socialLoginType") SocialAuthType socialAuthType,
             Map<String, Object> responseMap
             ) {
+
+        log.info(responseMap.toString());
         ObjectMapper mapper = new ObjectMapper();
         mapper.setPropertyNamingStrategy(PropertyNamingStrategy.LOWER_CAMEL_CASE);
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
