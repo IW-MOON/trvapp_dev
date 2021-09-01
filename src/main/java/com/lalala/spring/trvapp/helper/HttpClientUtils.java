@@ -7,9 +7,12 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.lalala.spring.trvapp.exception.ServerRuntimeException;
 import com.lalala.spring.trvapp.exception.UnAuthorizedException;
 import com.lalala.spring.trvapp.model.OAuthResponse;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Map;
@@ -17,11 +20,13 @@ import java.util.Optional;
 @Component
 public class HttpClientUtils {
 
-    public Optional<ResponseEntity<String>> doPostResponseEntity(Map<String, Object> params, String url) {
+    public Optional<ResponseEntity<String>> doPostResponseEntity(MultiValueMap<String, Object> params, String url) {
 
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> responseEntity = null;
 
+        HttpHeaders headers = new HttpHeaders();
+        HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<MultiValueMap<String, Object>>(params, headers);
         try {
 
             responseEntity =
@@ -53,7 +58,7 @@ public class HttpClientUtils {
         return Optional.ofNullable(responseEntity);
     }
 
-    public Optional<OAuthResponse> getPostOAuthResponse(Map<String, Object> params, String url) {
+    public Optional<OAuthResponse> getPostOAuthResponse(MultiValueMap<String, Object> params, String url) {
 
         Optional<ResponseEntity<String>> optionalResponseEntity = this.doPostResponseEntity(params, url);
 

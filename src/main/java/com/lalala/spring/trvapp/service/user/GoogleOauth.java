@@ -17,6 +17,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -50,12 +52,12 @@ public class GoogleOauth implements SocialOauth {
     @Override
     public Optional<OAuthResponse> requestAccessToken(ServiceResponse serviceResponse) {
 
-        Map<String, Object> params = new HashMap<>();
-        params.put("code", serviceResponse.getCode());
-        params.put("client_id", clientId);
-        params.put("client_secret", clientSecret);
-        params.put("redirect_uri", redirectUrl);
-        params.put("grant_type", "authorization_code");
+        MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
+        params.add("code", serviceResponse.getCode());
+        params.add("client_id", clientId);
+        params.add("client_secret", clientSecret);
+        params.add("redirect_uri", redirectUrl);
+        params.add("grant_type", "authorization_code");
 
         return httpClientUtils.getPostOAuthResponse(params, tokenBaseUrl);
     }
@@ -64,11 +66,11 @@ public class GoogleOauth implements SocialOauth {
     public Optional<OAuthResponse> refreshAccessToken(ServiceResponse serviceResponse) {
 
         log.info(redirectUrl);
-        Map<String, Object> params = new HashMap<>();
-        params.put("client_id", clientId);
-        params.put("client_secret", clientSecret);
-        params.put("refresh_token", serviceResponse.getRefreshToken());
-        params.put("grant_type", "refresh_token");
+        MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
+        params.add("client_id", clientId);
+        params.add("client_secret", clientSecret);
+        params.add("refresh_token", serviceResponse.getRefreshToken());
+        params.add("grant_type", "refresh_token");
 
         return httpClientUtils.getPostOAuthResponse(params, tokenBaseUrl);
     }

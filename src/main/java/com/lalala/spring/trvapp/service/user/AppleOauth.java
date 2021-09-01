@@ -25,6 +25,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 import java.io.FileReader;
 import java.io.IOException;
@@ -278,12 +280,13 @@ public class AppleOauth implements SocialOauth{
     public Optional<OAuthResponse> validateAuthorizationGrantCode(String clientSecret, String code) {
 
 
-        Map<String, Object> params = new HashMap<>();
-        params.put("code", code);
-        params.put("client_id", clientId);
-        params.put("client_secret", clientSecret);
-        params.put("redirect_uri", redirectUrl);
-        params.put("grant_type", "authorization_code");
+        MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
+
+        params.add("code", code);
+        params.add("client_id", clientId);
+        params.add("client_secret", clientSecret);
+        params.add("redirect_uri", redirectUrl);
+        params.add("grant_type", "authorization_code");
 
         return httpClientUtils.getPostOAuthResponse(params, tokenUrl);
     }
@@ -298,12 +301,12 @@ public class AppleOauth implements SocialOauth{
      */
     public Optional<OAuthResponse> validateAnExistingRefreshToken(String clientSecret, String refreshToken) {
 
-        Map<String, Object> params = new HashMap<>();
+        MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
 
-        params.put("client_id", clientId);
-        params.put("client_secret", clientSecret);
-        params.put("grant_type", "refresh_token");
-        params.put("refresh_token", refreshToken);
+        params.add("client_id", clientId);
+        params.add("client_secret", clientSecret);
+        params.add("grant_type", "refresh_token");
+        params.add("refresh_token", refreshToken);
 
         return httpClientUtils.getPostOAuthResponse(params, tokenUrl);
     }
