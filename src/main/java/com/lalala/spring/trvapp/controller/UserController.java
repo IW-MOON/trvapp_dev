@@ -2,6 +2,7 @@ package com.lalala.spring.trvapp.controller;
 
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lalala.spring.trvapp.model.ServiceResponse;
 import com.lalala.spring.trvapp.service.user.UserService;
 import com.lalala.spring.trvapp.type.SocialAuthType;
@@ -11,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 
 
 @Slf4j
@@ -29,8 +31,11 @@ public class UserController {
     @RequestMapping( value = "/auth/{socialLoginType}", method = {RequestMethod.GET, RequestMethod.POST})
     public ResponseEntity<ServiceResponse> callback(
             @PathVariable(name = "socialLoginType") SocialAuthType socialAuthType,
-            ServiceResponse serviceResponse
+            Map<String, Object> responseMap
             ) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        ServiceResponse serviceResponse = objectMapper.convertValue(responseMap, ServiceResponse.class);
+
         log.info(socialAuthType.toString());
         log.info(serviceResponse.toString());
         return userService.auth(socialAuthType, serviceResponse);
