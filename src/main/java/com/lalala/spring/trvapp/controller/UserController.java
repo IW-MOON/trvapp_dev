@@ -38,7 +38,7 @@ public class UserController {
 
         log.info(responseMap.toString());
         ObjectMapper mapper = new ObjectMapper();
-        mapper.setPropertyNamingStrategy(PropertyNamingStrategy.LOWER_CAMEL_CASE);
+        mapper.setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE);
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
         ServiceResponse serviceResponse = mapper.convertValue(responseMap, ServiceResponse.class);
