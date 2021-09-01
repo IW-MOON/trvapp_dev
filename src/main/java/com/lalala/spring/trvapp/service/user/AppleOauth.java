@@ -238,12 +238,12 @@ public class AppleOauth implements SocialOauth{
      */
     private PrivateKey readPrivateKey() {
 
-        Resource resource = new ClassPathResource("file : "+keyPath);
+        //Resource resource = new ClassPathResource("file : "+keyPath);
         byte[] content = null;
         PrivateKey privateKey = null;
 
         try {
-            FileReader keyReader = new FileReader(resource.getURI().getPath());
+            FileReader keyReader = new FileReader(keyPath);
             PemReader pemReader = new PemReader(keyReader);
             PemObject pemObject = pemReader.readPemObject();
             content = pemObject.getContent();
