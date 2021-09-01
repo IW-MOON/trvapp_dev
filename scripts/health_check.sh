@@ -17,7 +17,7 @@ fi
 
 echo "> Start health check of WAS at '${TARGET_URL}' ..."
 
-for RETRY_COUNT in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21
+for RETRY_COUNT in 1 2 3 4 5 6 7 8 9 10
 do
   echo "> #${RETRY_COUNT} trying..."
   RESPONSE_CODE=$(curl -s -o /dev/null -w "%{http_code}" ${TARGET_URL}/health)
