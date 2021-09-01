@@ -35,12 +35,17 @@ public class UserController {
             @PathVariable(name = "socialLoginType") SocialAuthType socialAuthType,
             @RequestParam Map<String, Object> responseMap
             ) {
-
         log.info(responseMap.toString());
         ObjectMapper mapper = new ObjectMapper();
-        mapper.setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE);
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
+        if(socialAuthType == SocialAuthType.APPLE){
+            mapper.setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE);
+            mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        }
+//        else {
+//            mapper.setPropertyNamingStrategy(PropertyNamingStrategy.LOWER_CAMEL_CASE);
+//            mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+//        }
         ServiceResponse serviceResponse = mapper.convertValue(responseMap, ServiceResponse.class);
 
         log.info(socialAuthType.toString());

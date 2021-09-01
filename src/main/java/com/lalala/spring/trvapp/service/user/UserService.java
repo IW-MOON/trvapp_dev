@@ -31,11 +31,11 @@ public class UserService {
 
     public ResponseEntity<ServiceResponse> auth(SocialAuthType socialAuthType, ServiceResponse serviceResponse){
 
-        Optional<OAuthResponse> result = oauthService.requestAccessToken(socialAuthType, serviceResponse);
-        return result.map(r -> {
+        Optional<OAuthResponse> optOAuthResponse = oauthService.requestAccessToken(socialAuthType, serviceResponse);
+        return optOAuthResponse.map(oAuthResponse -> {
 
-            User user = oauthService.getUserInfo(socialAuthType, r);
-            log.debug(user.toString());
+            User user = oauthService.getUserInfo(socialAuthType, oAuthResponse);
+            log.info(user.toString());
 
             Optional<User> optFindUser =
                     userRepository.findBySocialUniqId(user.getSocialUniqId());
@@ -50,25 +50,25 @@ public class UserService {
 
                 optUserToken.ifPresentOrElse(
                         findUserToken -> {
-                            if(!findUserToken.getRefreshToken().equals(r.getRefreshToken()))
-                                findUserToken.updateRefreshToken(r.getRefreshToken());
+                            if(!findUserToken.getRefreshToken().equals(oAuthResponse.getRefreshToken()))
+                                findUserToken.updateRefreshToken(oAuthResponse.getRefreshToken());
                         },
-                        () -> saveRefreshToken(findUser, r.getRefreshToken())
+                        () -> saveRefreshToken(findUser, oAuthResponse.getRefreshToken())
                 );
 
             } else {
                 User saveUser = userRepository.save(user);
-                saveRefreshToken(saveUser, r.getRefreshToken());
+                saveRefreshToken(saveUser, oAuthResponse.getRefreshToken());
             }
 
-            System.out.println("r = " + r.toString());
+            System.out.println("r = " + oAuthResponse.toString());
 
-            String jwt = jwtTokenProvider.encodeJwtToken(r.getAccessToken(), r.getRefreshToken());
+            String jwt = jwtTokenProvider.encodeJwtToken(oAuthResponse.getAccessToken(), oAuthResponse.getRefreshToken());
             return new ResponseEntity<ServiceResponse>(
                     ServiceResponse.builder()
                             .token(jwt)
-                            .accessToken(r.getAccessToken())
-                            .refreshToken(r.getRefreshToken())
+                            .accessToken(oAuthResponse.getAccessToken())
+                            .refreshToken(oAuthResponse.getRefreshToken())
                             .build(), HttpStatus.OK);
 
         }).orElseThrow(UnAuthorizedException::new);
@@ -77,15 +77,15 @@ public class UserService {
 
     public ResponseEntity<ServiceResponse> refreshToken(SocialAuthType socialAuthType, ServiceResponse serviceResponse){
 
-        Optional<OAuthResponse> result = oauthService.refreshAccessToken(socialAuthType, serviceResponse);
-        return result.map(r -> {
+        Optional<OAuthResponse> optOAuthResponse = oauthService.refreshAccessToken(socialAuthType, serviceResponse);
+        return optOAuthResponse.map(oAuthResponse -> {
 
-            String jwt = jwtTokenProvider.encodeJwtToken(r.getAccessToken(), r.getRefreshToken());
+            String jwt = jwtTokenProvider.encodeJwtToken(oAuthResponse.getAccessToken(), oAuthResponse.getRefreshToken());
             return new ResponseEntity<ServiceResponse>(
                     ServiceResponse.builder()
                             .token(jwt)
-                            .accessToken(r.getAccessToken())
-                            .refreshToken(r.getRefreshToken())
+                            .accessToken(oAuthResponse.getAccessToken())
+                            .refreshToken(oAuthResponse.getRefreshToken())
                             .build(), HttpStatus.OK);
 
         }).orElseThrow(UnAuthorizedException::new);

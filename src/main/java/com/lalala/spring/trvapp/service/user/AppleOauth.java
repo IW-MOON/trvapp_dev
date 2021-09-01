@@ -22,13 +22,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.util.io.pem.PemObject;
 import org.bouncycastle.util.io.pem.PemReader;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
-import javax.crypto.interfaces.PBEKey;
 import java.io.FileReader;
 import java.io.IOException;
 import java.security.KeyFactory;
@@ -104,14 +101,28 @@ public class AppleOauth implements SocialOauth{
     @Override
     public User getUserInfo(OAuthResponse oAuthResponse) {
 
-        Object user = oAuthResponse.getUser();
-        
-//        User appleUser = User.builder()
-//                .socialAuthType(SocialAuthType.APPLE)
-//                .email(oAuthResponse.getUser().g)
+        User appleUser = null;
 
+        try {
 
-       return null;
+            String idToken = oAuthResponse.getIdToken();
+            SignedJWT signedJWT = SignedJWT.parse(idToken);
+            JWTClaimsSet payload = signedJWT.getJWTClaimsSet();
+
+            String email = payload.getStringClaim("email");
+
+            if (email == null)
+                throw new UnAuthorizedException();
+
+            appleUser = User.builder()
+                    .socialAuthType(SocialAuthType.APPLE)
+                    .socialUniqId(email)
+                    .email(email).build();
+
+        } catch (ParseException e1){
+            throw new UnAuthorizedException();
+        }
+       return appleUser;
     }
 
     public String getAppleClientSecret(String idToken) {
