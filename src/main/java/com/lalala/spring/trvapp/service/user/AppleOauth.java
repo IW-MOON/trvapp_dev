@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.lalala.spring.trvapp.entity.User;
 import com.lalala.spring.trvapp.exception.UnAuthorizedException;
 import com.lalala.spring.trvapp.helper.HttpClientUtils;
 import com.lalala.spring.trvapp.model.*;

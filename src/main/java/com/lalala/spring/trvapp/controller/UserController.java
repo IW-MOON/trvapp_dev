@@ -26,10 +26,14 @@ public class UserController {
 
     private final UserService userService;
 
+    /*
+    * (Apple) Login 유저 정보를 받은 후 권한 생성
+    *
+    * @param serviceResponse
+    * @return
+    * */
     // 로그인
     //CrossOrigin(origins = "http://localhost:8080")
-    //@GetMapping(value = "/auth/{socialLoginType}")
-    //@PostMapping(value = "/auth/{socialLoginType}")
     @RequestMapping( value = "/auth/{socialLoginType}", method = {RequestMethod.GET, RequestMethod.POST})
     public ResponseEntity<ServiceResponse> callback(
             @PathVariable(name = "socialLoginType") SocialAuthType socialAuthType,

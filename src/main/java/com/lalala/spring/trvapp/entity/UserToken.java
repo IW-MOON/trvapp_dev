@@ -1,4 +1,4 @@
-package com.lalala.spring.trvapp.model;
+package com.lalala.spring.trvapp.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 
 @Entity
 @Getter
@@ -15,7 +14,7 @@ import java.time.ZoneId;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UserToken extends BaseEntity{
+public class UserToken extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

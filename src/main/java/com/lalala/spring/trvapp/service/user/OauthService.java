@@ -2,7 +2,7 @@ package com.lalala.spring.trvapp.service.user;
 
 import com.lalala.spring.trvapp.model.OAuthResponse;
 import com.lalala.spring.trvapp.model.ServiceResponse;
-import com.lalala.spring.trvapp.model.User;
+import com.lalala.spring.trvapp.entity.User;
 import com.lalala.spring.trvapp.type.SocialAuthType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

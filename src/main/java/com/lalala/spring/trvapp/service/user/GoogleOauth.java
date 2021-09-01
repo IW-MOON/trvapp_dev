@@ -11,7 +11,7 @@ import com.lalala.spring.trvapp.exception.ServerRuntimeException;
 import com.lalala.spring.trvapp.helper.HttpClientUtils;
 import com.lalala.spring.trvapp.model.OAuthResponse;
 import com.lalala.spring.trvapp.model.ServiceResponse;
-import com.lalala.spring.trvapp.model.User;
+import com.lalala.spring.trvapp.entity.User;
 import com.lalala.spring.trvapp.type.SocialAuthType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,8 +24,6 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.time.LocalDateTime;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 @Slf4j

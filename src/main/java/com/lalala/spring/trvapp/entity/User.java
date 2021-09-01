@@ -1,11 +1,10 @@
-package com.lalala.spring.trvapp.model;
+package com.lalala.spring.trvapp.entity;
 
 import com.lalala.spring.trvapp.type.SocialAuthType;
 import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 
 @Entity
 @Getter
@@ -13,7 +12,7 @@ import java.time.ZoneId;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class User extends BaseEntity{
+public class User extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

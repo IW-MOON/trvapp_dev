@@ -1,4 +1,4 @@
-package com.lalala.spring.trvapp.model;
+package com.lalala.spring.trvapp.entity;
 
 
 import com.fasterxml.jackson.annotation.JsonFormat;
