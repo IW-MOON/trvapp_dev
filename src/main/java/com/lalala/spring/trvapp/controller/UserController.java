@@ -25,10 +25,12 @@ public class UserController {
     // 로그인
     //CrossOrigin(origins = "http://localhost:8080")
     @GetMapping(value = "/auth/{socialLoginType}")
+    @PostMapping(value = "/auth/{socialLoginType}")
     public ResponseEntity<ServiceResponse> callback(
             @PathVariable(name = "socialLoginType") SocialAuthType socialAuthType,
             ServiceResponse serviceResponse
             ) {
+
         return userService.auth(socialAuthType, serviceResponse);
     }
 
