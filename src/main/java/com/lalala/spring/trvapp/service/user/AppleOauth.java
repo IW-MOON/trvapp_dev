@@ -238,7 +238,7 @@ public class AppleOauth implements SocialOauth{
      */
     private PrivateKey readPrivateKey() {
 
-        Resource resource = new ClassPathResource(keyPath);
+        Resource resource = new ClassPathResource("file : "+keyPath);
         byte[] content = null;
         PrivateKey privateKey = null;
 
