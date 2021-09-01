@@ -31,8 +31,8 @@ public class UserController {
             @PathVariable(name = "socialLoginType") SocialAuthType socialAuthType,
             ServiceResponse serviceResponse
             ) {
-        log.debug(socialAuthType.toString());
-        log.debug(serviceResponse.toString());
+        log.info(socialAuthType.toString());
+        log.info(serviceResponse.toString());
         return userService.auth(socialAuthType, serviceResponse);
     }
 
