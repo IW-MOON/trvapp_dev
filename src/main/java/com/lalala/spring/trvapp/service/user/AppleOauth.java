@@ -45,7 +45,7 @@ import java.util.*;
 @RequiredArgsConstructor
 public class AppleOauth implements SocialOauth{
 
-    @Value("${server.protocol}://${server.out-address}:${server.out-port}/user/auth/apple" )
+    @Value("${server.protocol}://${server.out-address}/user/auth/apple" )
     private String redirectUrl;
     @Value("${external.auth.apple.token_url}" )
     private String tokenUrl;
