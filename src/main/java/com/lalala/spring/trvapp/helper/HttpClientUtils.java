@@ -72,6 +72,7 @@ public class HttpClientUtils {
                         if (responseEntity.getStatusCode() == HttpStatus.OK) {
                             OAuthResponse oAuthResponse = mapper.readValue(responseEntity.getBody(), new TypeReference<OAuthResponse>() {
                             });
+
                             System.out.println("result = " + oAuthResponse);
                             return Optional.ofNullable(oAuthResponse);
                         }

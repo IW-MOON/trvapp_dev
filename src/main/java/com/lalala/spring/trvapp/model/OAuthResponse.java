@@ -14,5 +14,6 @@ public class OAuthResponse {
     private String code;
     private String state;
     private Object user;
+    private String clientSecret;
 
 }

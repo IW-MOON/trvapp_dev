@@ -69,6 +69,7 @@ public class UserService {
                             .token(jwt)
                             .accessToken(oAuthResponse.getAccessToken())
                             .refreshToken(oAuthResponse.getRefreshToken())
+                            .clientSecret(oAuthResponse.getClientSecret())
                             .build(), HttpStatus.OK);
 
         }).orElseThrow(UnAuthorizedException::new);

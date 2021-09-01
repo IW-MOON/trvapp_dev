@@ -30,7 +30,7 @@ public class JwtTokenProvider {
         try {
             Date now = new Date();
             //long nonce = Long.valueOf(tokenRequest.getNonce()) , expTime = 1800000L;	// 유효시간 : 30m
-            long expTime = 1800000L;	// 유효시간 : 30m
+            long expTime = 3600000L;	// 유효시간 : 30m
             SecretKey key = Keys.hmacShaKeyFor(secretKey.getBytes("UTF-8"));
 
             Map<String, Object> header = new HashMap<>();

@@ -292,7 +292,14 @@ public class AppleOauth implements SocialOauth{
         params.add("redirect_uri", redirectUrl);
         params.add("grant_type", "authorization_code");
 
-        return httpClientUtils.getPostOAuthResponse(params, tokenUrl);
+        Optional<OAuthResponse> optOAuthResponse = httpClientUtils.getPostOAuthResponse(params, tokenUrl);
+
+        optOAuthResponse.ifPresent(
+                oAuthResponse -> {
+                    oAuthResponse.setClientSecret(clientSecret);
+                }
+        );
+        return optOAuthResponse;
     }
 
     /**
