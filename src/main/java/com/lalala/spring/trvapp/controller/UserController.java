@@ -24,8 +24,9 @@ public class UserController {
 
     // 로그인
     //CrossOrigin(origins = "http://localhost:8080")
-    @GetMapping(value = "/auth/{socialLoginType}")
-    @PostMapping(value = "/auth/{socialLoginType}")
+    //@GetMapping(value = "/auth/{socialLoginType}")
+    //@PostMapping(value = "/auth/{socialLoginType}")
+    @RequestMapping( value = "/auth/{socialLoginType}", method = {RequestMethod.GET, RequestMethod.POST})
     public ResponseEntity<ServiceResponse> callback(
             @PathVariable(name = "socialLoginType") SocialAuthType socialAuthType,
             ServiceResponse serviceResponse
