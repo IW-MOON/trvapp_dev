@@ -2,7 +2,9 @@ package com.lalala.spring.trvapp.controller;
 
 
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.lalala.spring.trvapp.model.ServiceResponse;
 import com.lalala.spring.trvapp.service.user.UserService;
 import com.lalala.spring.trvapp.type.SocialAuthType;
@@ -33,8 +35,11 @@ public class UserController {
             @PathVariable(name = "socialLoginType") SocialAuthType socialAuthType,
             Map<String, Object> responseMap
             ) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        ServiceResponse serviceResponse = objectMapper.convertValue(responseMap, ServiceResponse.class);
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.setPropertyNamingStrategy(PropertyNamingStrategy.LOWER_CAMEL_CASE);
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+
+        ServiceResponse serviceResponse = mapper.convertValue(responseMap, ServiceResponse.class);
 
         log.info(socialAuthType.toString());
         log.info(serviceResponse.toString());

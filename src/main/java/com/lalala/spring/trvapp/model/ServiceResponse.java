@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@JsonNaming(PropertyNamingStrategy.LowerCaseStrategy.class)
+//@JsonNaming(PropertyNamingStrategy.LowerCaseStrategy)
 public class ServiceResponse {
 
     private String state;
