@@ -37,6 +37,7 @@ import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.text.ParseException;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Slf4j
@@ -119,7 +120,9 @@ public class AppleOauth implements SocialOauth{
             appleUser = User.builder()
                     .socialAuthType(SocialAuthType.APPLE)
                     .socialUniqId(email)
-                    .email(email).build();
+                    .email(email)
+                    .lastLoginDtm(LocalDateTime.now())
+                    .build();
 
         } catch (ParseException e1){
             throw new UnAuthorizedException();

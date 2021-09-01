@@ -22,6 +22,7 @@ import org.springframework.util.MultiValueMap;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -129,6 +130,7 @@ public class GoogleOauth implements SocialOauth {
                     .socialAuthType(SocialAuthType.GOOGLE)
                     .socialUniqId(userId)
                     .email(email)
+                    .lastLoginDtm(LocalDateTime.now())
                     .build();
 
         } catch (GeneralSecurityException | IOException e) {
