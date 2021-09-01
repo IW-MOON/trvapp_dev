@@ -46,6 +46,7 @@ public class HttpClientUtils {
                     restTemplate.getForEntity(url, String.class, params );
 
         } catch (Exception e) {
+            e.printStackTrace();
             throw new UnAuthorizedException();
         }
         return Optional.ofNullable(responseEntity);
