@@ -82,8 +82,10 @@ public class UserService {
 
     public ResponseEntity<ServiceResponse> refreshToken(SocialAuthType socialAuthType, ServiceResponse serviceResponse){
 
-        if(serviceResponse.getClientSecret() == null){
-            throw new UnAuthorizedException();
+        if(socialAuthType == SocialAuthType.APPLE){
+            if(serviceResponse.getClientSecret() == null){
+                throw new UnAuthorizedException();
+            }
         }
         if(serviceResponse.getRefreshToken() == null){
             throw new UnAuthorizedException();

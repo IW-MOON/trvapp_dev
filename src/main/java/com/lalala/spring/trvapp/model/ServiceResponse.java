@@ -22,6 +22,6 @@ public class ServiceResponse {
     private String refreshToken;
     private String token;
     private String clientSecret;
-
+    private String scope;
 
 }
