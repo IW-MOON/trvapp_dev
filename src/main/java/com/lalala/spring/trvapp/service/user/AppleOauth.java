@@ -93,12 +93,7 @@ public class AppleOauth implements SocialOauth{
     @Override
     public Optional<OAuthResponse> refreshAccessToken(ServiceResponse serviceResponse) {
 
-        if(serviceResponse.getClientSecret() == null){
-            throw new UnAuthorizedException();
-        }
-        if(serviceResponse.getRefreshToken() == null){
-            throw new UnAuthorizedException();
-        }
+
         return validateAnExistingRefreshToken(serviceResponse.getClientSecret(), serviceResponse.getRefreshToken());
     }
 

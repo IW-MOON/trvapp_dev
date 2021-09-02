@@ -31,6 +31,10 @@ public class UserService {
 
     public ResponseEntity<ServiceResponse> auth(SocialAuthType socialAuthType, ServiceResponse serviceResponse){
 
+        if(serviceResponse.getCode() == null){
+            throw new UnAuthorizedException();
+        }
+
         Optional<OAuthResponse> optOAuthResponse = oauthService.requestAccessToken(socialAuthType, serviceResponse);
         return optOAuthResponse.map(oAuthResponse -> {
 
@@ -78,15 +82,22 @@ public class UserService {
 
     public ResponseEntity<ServiceResponse> refreshToken(SocialAuthType socialAuthType, ServiceResponse serviceResponse){
 
+        if(serviceResponse.getClientSecret() == null){
+            throw new UnAuthorizedException();
+        }
+        if(serviceResponse.getRefreshToken() == null){
+            throw new UnAuthorizedException();
+        }
+
         Optional<OAuthResponse> optOAuthResponse = oauthService.refreshAccessToken(socialAuthType, serviceResponse);
         return optOAuthResponse.map(oAuthResponse -> {
 
-            String jwt = jwtTokenProvider.encodeJwtToken(socialAuthType, oAuthResponse.getAccessToken(), oAuthResponse.getRefreshToken());
+            String jwt = jwtTokenProvider.encodeJwtToken(socialAuthType, oAuthResponse.getAccessToken(), serviceResponse.getRefreshToken());
             return new ResponseEntity<ServiceResponse>(
                     ServiceResponse.builder()
                             .token(jwt)
                             .accessToken(oAuthResponse.getAccessToken())
-                            .refreshToken(oAuthResponse.getRefreshToken())
+                            .refreshToken(serviceResponse.getRefreshToken())
                             .build(), HttpStatus.OK);
 
         }).orElseThrow(UnAuthorizedException::new);
