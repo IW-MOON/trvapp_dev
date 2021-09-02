@@ -41,10 +41,10 @@ public class UserController {
             ) {
         log.info(responseMap.toString());
         ObjectMapper mapper = new ObjectMapper();
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
         if(socialAuthType == SocialAuthType.APPLE){
             mapper.setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE);
-            mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         }
 //        else {
 //            mapper.setPropertyNamingStrategy(PropertyNamingStrategy.LOWER_CAMEL_CASE);
@@ -57,7 +57,7 @@ public class UserController {
         return userService.auth(socialAuthType, serviceResponse);
     }
 
-    @GetMapping(value = "/auth/{socialLoginType}/refresh_token")
+    @PostMapping(value = "/auth/{socialLoginType}/refresh_token")
     public ResponseEntity<ServiceResponse> refreshToken(
             @PathVariable(name = "socialLoginType") SocialAuthType socialAuthType,
             ServiceResponse serviceResponse
