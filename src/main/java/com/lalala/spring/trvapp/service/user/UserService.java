@@ -1,11 +1,15 @@
 package com.lalala.spring.trvapp.service.user;
 
+import com.lalala.spring.trvapp.entity.Auth;
+import com.lalala.spring.trvapp.exception.ForbiddenException;
 import com.lalala.spring.trvapp.exception.UnAuthorizedException;
+import com.lalala.spring.trvapp.helper.HttpClientUtils;
 import com.lalala.spring.trvapp.helper.JwtTokenProvider;
 import com.lalala.spring.trvapp.model.OAuthResponse;
 import com.lalala.spring.trvapp.model.ServiceResponse;
 import com.lalala.spring.trvapp.entity.User;
 import com.lalala.spring.trvapp.entity.UserToken;
+import com.lalala.spring.trvapp.repository.AuthRepository;
 import com.lalala.spring.trvapp.repository.UserRepository;
 import com.lalala.spring.trvapp.repository.UserTokenRepository;
 import com.lalala.spring.trvapp.type.SocialAuthType;
@@ -15,6 +19,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -26,8 +32,11 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final UserTokenRepository userTokenRepository;
+    private final AuthRepository authRepository;
     private final OauthService oauthService;
     private final JwtTokenProvider jwtTokenProvider;
+    private final WordsGenerate wordsGenerate;
+
 
     public ResponseEntity<ServiceResponse> auth(SocialAuthType socialAuthType, ServiceResponse serviceResponse){
 
@@ -38,8 +47,10 @@ public class UserService {
         Optional<OAuthResponse> optOAuthResponse = oauthService.requestAccessToken(socialAuthType, serviceResponse);
         return optOAuthResponse.map(oAuthResponse -> {
 
-            User user = oauthService.getUserInfo(socialAuthType, oAuthResponse);
-            log.info(user.toString());
+            String jwt = jwtTokenProvider.encodeJwtToken(socialAuthType, oAuthResponse.getAccessToken(), oAuthResponse.getRefreshToken());
+            String idToken = oAuthResponse.getIdToken();
+
+            User user = oauthService.getUserInfo(socialAuthType, idToken);
 
             Optional<User> optFindUser =
                     userRepository.findBySocialUniqId(user.getSocialUniqId());
@@ -60,23 +71,85 @@ public class UserService {
                         () -> saveRefreshToken(findUser, oAuthResponse.getRefreshToken())
                 );
 
+                System.out.println("r = " + oAuthResponse.toString());
+
+                return new ResponseEntity<ServiceResponse>(
+                        ServiceResponse.builder()
+                                .token(jwt)
+                                .accessToken(oAuthResponse.getAccessToken())
+                                .refreshToken(oAuthResponse.getRefreshToken())
+                                .clientSecret(oAuthResponse.getClientSecret())
+                                .isJoined(true)
+                                .build(), HttpStatus.OK);
+
             } else {
-                User saveUser = userRepository.save(user);
-                saveRefreshToken(saveUser, oAuthResponse.getRefreshToken());
+
+//                User saveUser = userRepository.save(user);
+//                saveRefreshToken(saveUser, oAuthResponse.getRefreshToken());
+                Auth auth = Auth.builder()
+                            .socialAuthType(socialAuthType)
+                                    .token(jwt).joinYn("N").build();
+                //log.info(authRepository.save(auth).toString());
+                long idx = authRepository.save(auth).getAuthIdx();
+
+                return new ResponseEntity<ServiceResponse>(
+                        ServiceResponse.builder()
+                                .token(jwt)
+                                .idToken(idToken)
+                                //.accessToken(oAuthResponse.getAccessToken())
+                                //.refreshToken(oAuthResponse.getRefreshToken())
+                                .clientSecret(oAuthResponse.getClientSecret())
+                                .isJoined(false)
+                                .idx(idx)
+                                .build(), HttpStatus.OK);
+
             }
-
-            System.out.println("r = " + oAuthResponse.toString());
-
-            String jwt = jwtTokenProvider.encodeJwtToken(socialAuthType, oAuthResponse.getAccessToken(), oAuthResponse.getRefreshToken());
-            return new ResponseEntity<ServiceResponse>(
-                    ServiceResponse.builder()
-                            .token(jwt)
-                            .accessToken(oAuthResponse.getAccessToken())
-                            .refreshToken(oAuthResponse.getRefreshToken())
-                            .clientSecret(oAuthResponse.getClientSecret())
-                            .build(), HttpStatus.OK);
-
         }).orElseThrow(UnAuthorizedException::new);
+
+    }
+
+    public ResponseEntity<ServiceResponse> join(SocialAuthType socialAuthType, ServiceResponse serviceResponse) throws UnAuthorizedException {
+
+        long authIdx = serviceResponse.getIdx();
+
+        String token = serviceResponse.getToken();
+        if(token == null || !jwtTokenProvider.validateToken(token)){
+            throw new UnAuthorizedException();
+        }
+        String idToken = serviceResponse.getIdToken();
+        if(idToken == null){
+            throw new UnAuthorizedException();
+        }
+
+        Optional<Auth> optAuth = authRepository.findByAuthIdx(authIdx);
+
+        optAuth.ifPresentOrElse(
+            auth -> {
+                if(!auth.getToken().equals(token)){
+                    throw new UnAuthorizedException();
+                }
+                auth.updateJoinYn();
+            }, UnAuthorizedException::new
+        );
+
+        String accessToken = jwtTokenProvider.getClaim(token, "access_token");
+        String refreshToken = jwtTokenProvider.getClaim(token, "refresh_token");
+
+        User user = oauthService.getUserInfo(socialAuthType, idToken);
+        String nickName = wordsGenerate.generateNickName();
+        user.setNickName(nickName);
+        log.info(user.toString());
+
+        User saveUser = userRepository.save(user);
+        saveRefreshToken(saveUser, serviceResponse.getRefreshToken());
+
+        return new ResponseEntity<ServiceResponse>(
+                ServiceResponse.builder()
+                        .token(token)
+                        .accessToken(accessToken)
+                        .refreshToken(refreshToken)
+                        .isJoined(true)
+                        .build(), HttpStatus.OK);
 
     }
 
@@ -87,12 +160,23 @@ public class UserService {
                 throw new UnAuthorizedException();
             }
         }
-        if(serviceResponse.getRefreshToken() == null){
+        String refreshToken = serviceResponse.getRefreshToken();
+        if(refreshToken == null){
             throw new UnAuthorizedException();
         }
 
         Optional<OAuthResponse> optOAuthResponse = oauthService.refreshAccessToken(socialAuthType, serviceResponse);
         return optOAuthResponse.map(oAuthResponse -> {
+
+            Optional<UserToken> optUserToken =
+                    userTokenRepository.findByRefreshToken(refreshToken);
+
+            optUserToken.ifPresentOrElse(
+                    findUserToken -> {
+                        if(!findUserToken.getRefreshToken().equals(oAuthResponse.getRefreshToken()))
+                            findUserToken.updateRefreshToken(oAuthResponse.getRefreshToken());
+                    }, UnAuthorizedException::new
+            );
 
             String jwt = jwtTokenProvider.encodeJwtToken(socialAuthType, oAuthResponse.getAccessToken(), serviceResponse.getRefreshToken());
             return new ResponseEntity<ServiceResponse>(
@@ -106,7 +190,7 @@ public class UserService {
 
     }
 
-    public void saveRefreshToken(User user, String refreshToken){
+    private void saveRefreshToken(User user, String refreshToken){
 
         if(refreshToken != null){
             UserToken userToken = UserToken.builder()

@@ -36,7 +36,7 @@ public class HttpClientUtils {
 
         } catch (Exception e) {
             e.printStackTrace();
-            throw new UnAuthorizedException();
+            throw new ServerRuntimeException();
         }
         return Optional.ofNullable(responseEntity);
     }
@@ -50,6 +50,23 @@ public class HttpClientUtils {
 
             responseEntity =
                     restTemplate.getForEntity(url, String.class, params );
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new ServerRuntimeException();
+        }
+        return Optional.ofNullable(responseEntity);
+    }
+
+    public Optional<ResponseEntity<String[]>> doGetResponseEntityArray(Map<String, Object> params, String url) {
+
+        RestTemplate restTemplate = new RestTemplate();
+
+        ResponseEntity<String[]> responseEntity = null;
+        try {
+
+            responseEntity =
+                    restTemplate.getForEntity(url, String[].class, params );
 
         } catch (Exception e) {
             e.printStackTrace();

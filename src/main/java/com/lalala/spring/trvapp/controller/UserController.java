@@ -46,15 +46,23 @@ public class UserController {
         if(socialAuthType == SocialAuthType.APPLE){
             mapper.setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE);
         }
-//        else {
-//            mapper.setPropertyNamingStrategy(PropertyNamingStrategy.LOWER_CAMEL_CASE);
-//            mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-//        }
-        ServiceResponse serviceResponse = mapper.convertValue(responseMap, ServiceResponse.class);
 
+        ServiceResponse serviceResponse = mapper.convertValue(responseMap, ServiceResponse.class);
         log.info(socialAuthType.toString());
         log.info(serviceResponse.toString());
+        //return  new ResponseEntity<>(HttpStatus.OK);
         return userService.auth(socialAuthType, serviceResponse);
+    }
+
+    @PostMapping( value = "/join/{socialLoginType}")
+    public ResponseEntity<ServiceResponse> join(
+            @PathVariable(name = "socialLoginType") SocialAuthType socialAuthType,
+            ServiceResponse serviceResponse
+    ) {
+        log.info(socialAuthType.toString());
+        log.info(serviceResponse.toString());
+
+        return userService.join(socialAuthType, serviceResponse);
     }
 
     @PostMapping(value = "/auth/{socialLoginType}/refresh_token")
@@ -65,18 +73,22 @@ public class UserController {
 
         return userService.refreshToken(socialAuthType, serviceResponse);
     }
+
     @GetMapping(value = "/check")
     public ResponseEntity check(
-            //@RequestParam(name = "access_token") String access_token, @RequestParam(name = "refresh_token") String refresh_token
             HttpServletRequest request
 
     ) {
-            //return responseEntity.getBody();
         System.out.println("access_token = " + request.getAttribute("access_token"));
         System.out.println("refresh_token = " + request.getAttribute("refresh_token"));
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 
-         return new ResponseEntity<>(HttpStatus.OK);
-
+    @PostMapping(value = "/endpoint")
+    public ResponseEntity<ServiceResponse> endpoint(String payload)
+    {
+        log.info(payload);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
 

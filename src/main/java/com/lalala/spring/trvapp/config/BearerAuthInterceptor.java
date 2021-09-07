@@ -24,7 +24,10 @@ public class BearerAuthInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request,
                              HttpServletResponse response, Object handler) {
+
+        System.out.println("request.getURI = " + request.getRequestURI());
         System.out.println(">>> interceptor.preHandle 호출");
+
         String token = extract(request, "Bearer");
         if (StringUtils.isEmpty(token)) {
             throw new UnAuthorizedException();

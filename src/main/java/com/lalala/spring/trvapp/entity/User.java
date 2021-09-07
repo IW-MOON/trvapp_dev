@@ -51,6 +51,10 @@ public class User extends BaseEntity {
         this.lastLoginDtm = LocalDateTime.now();
     }
 
+    public void setNickName(String nickName){
+        this.nickName = nickName;
+    }
+
 //    @PrePersist
 //    public void prePersist() {
 //        this.lastLoginDtm = this.lastLoginDtm == null ? LocalDateTime.now() : this.lastLoginDtm;

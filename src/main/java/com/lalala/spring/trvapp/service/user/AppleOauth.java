@@ -99,13 +99,12 @@ public class AppleOauth implements SocialOauth{
     }
 
     @Override
-    public User getUserInfo(OAuthResponse oAuthResponse) {
+    public User getUserInfo(String idToken) {
 
         User appleUser = null;
 
         try {
 
-            String idToken = oAuthResponse.getIdToken();
             SignedJWT signedJWT = SignedJWT.parse(idToken);
             JWTClaimsSet payload = signedJWT.getJWTClaimsSet();
 

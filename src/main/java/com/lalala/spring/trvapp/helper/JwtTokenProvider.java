@@ -25,6 +25,9 @@ public class JwtTokenProvider {
     @Value("${token.secret-key}")
     private String secretKey;
 
+    @Value("${token.temp-key}")
+    private String tempKey;
+
     public String encodeJwtToken(SocialAuthType socialAuthType,  String accessToken, String refreshToken) {
 
         String jwt = null;
@@ -78,13 +81,67 @@ public class JwtTokenProvider {
 
     public String getClaim(String jwt, String claimName) {
 
-
         try {
             return Jwts.parser().setSigningKey(secretKey.getBytes("UTF-8")).parseClaimsJws(jwt).getBody().get(claimName, String.class);
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
             return Strings.EMPTY;
         }
+    }
+
+    public String encodeJwtTempToken(SocialAuthType socialAuthType, String refreshToken) {
+
+        String jwt = null;
+        try {
+            Date now = new Date();
+            long expTime = 1800000L;	// 유효시간 : 30M
+
+            SecretKey key = Keys.hmacShaKeyFor(tempKey.getBytes("UTF-8"));
+
+            Map<String, Object> header = new HashMap<>();
+            header.put("typ", typ);
+            header.put("alg", alg);
+
+            jwt = Jwts.builder()
+                    .setHeader(header)
+                    .setIssuer("LaLaLa_TrvApp")
+                    .setIssuedAt(now)
+                    .setExpiration(new Date(System.currentTimeMillis() + expTime))
+                    .claim("refresh_token", refreshToken)
+                    .signWith(key)
+                    .compact();
+
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        return jwt;
+    }
+
+    public String getTempClaim(String jwt, String claimName) {
+
+        try {
+            return Jwts.parser().setSigningKey(tempKey.getBytes("UTF-8")).parseClaimsJws(jwt).getBody().get(claimName, String.class);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            return Strings.EMPTY;
+        }
+    }
+
+    public boolean validateTempToken(String jwt) {
+        try {
+            Jws<Claims> claims = Jwts.parser().setSigningKey(tempKey.getBytes("UTF-8")).parseClaimsJws(jwt);
+            Date exp = claims.getBody().getExpiration();
+            Date now = new Date();
+
+            if(exp.after(now))
+                return true;
+
+        } catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
+        return false;
     }
 
 }

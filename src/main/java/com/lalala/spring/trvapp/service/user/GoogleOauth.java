@@ -74,35 +74,9 @@ public class GoogleOauth implements SocialOauth {
         return httpClientUtils.getPostOAuthResponse(params, tokenBaseUrl);
     }
 
-//    private Optional<OAuthResponse> getOAuthResponse(Map<String, Object> params) {
-//        Optional<ResponseEntity<String>> optionalResponseEntity = httpClientUtils.doPostResponseEntity(params, tokenBaseUrl);
-//
-//        ObjectMapper mapper = new ObjectMapper();
-//        mapper.setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE);
-//        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-//
-//        return optionalResponseEntity.map(
-//                responseEntity -> {
-//                    try {
-//                        if (responseEntity.getStatusCode() == HttpStatus.OK) {
-//                            OAuthResponse oAuthResponse = mapper.readValue(responseEntity.getBody(), new TypeReference<OAuthResponse>() {
-//                            });
-//                            System.out.println("result = " + oAuthResponse);
-//                            return Optional.ofNullable(oAuthResponse);
-//                        }
-//                    } catch (Exception e){
-//                        throw new ServerRuntimeException();
-//                    }
-//                    throw new UnAuthorizedException();
-//                }
-//
-//        ).orElseThrow(UnAuthorizedException::new);
-//    }
-
     @Override
-    public User getUserInfo(OAuthResponse oAuthResponse) {
+    public User getUserInfo(String idToken) {
 
-        String idToken = oAuthResponse.getIdToken();
         HttpTransport transport = new NetHttpTransport();
         JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
 
