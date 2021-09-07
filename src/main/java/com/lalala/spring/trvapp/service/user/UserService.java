@@ -13,6 +13,8 @@ import com.lalala.spring.trvapp.repository.AuthRepository;
 import com.lalala.spring.trvapp.repository.UserRepository;
 import com.lalala.spring.trvapp.repository.UserTokenRepository;
 import com.lalala.spring.trvapp.type.SocialAuthType;
+import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.SignedJWT;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -21,7 +23,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.text.ParseException;
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.Optional;
 
 @Slf4j
@@ -84,20 +88,16 @@ public class UserService {
 
             } else {
 
-//                User saveUser = userRepository.save(user);
-//                saveRefreshToken(saveUser, oAuthResponse.getRefreshToken());
                 Auth auth = Auth.builder()
-                            .socialAuthType(socialAuthType)
-                                    .token(jwt).joinYn("N").build();
-                //log.info(authRepository.save(auth).toString());
+                        .socialAuthType(socialAuthType)
+                        .token(jwt)
+                        .joinYn("N").build();
                 long idx = authRepository.save(auth).getAuthIdx();
 
                 return new ResponseEntity<ServiceResponse>(
                         ServiceResponse.builder()
                                 .token(jwt)
                                 .idToken(idToken)
-                                //.accessToken(oAuthResponse.getAccessToken())
-                                //.refreshToken(oAuthResponse.getRefreshToken())
                                 .clientSecret(oAuthResponse.getClientSecret())
                                 .isJoined(false)
                                 .idx(idx)
@@ -199,6 +199,21 @@ public class UserService {
                     .creationDtm(LocalDateTime.now()).build();
             userTokenRepository.save(userToken);
         }
+    }
+
+    public void processEndpoint(String payload) {
+
+        try {
+            SignedJWT signedJWT = SignedJWT.parse(payload);
+            JWTClaimsSet claimsSet = signedJWT.getJWTClaimsSet();
+
+            Map<String, Object> eventMap = claimsSet.getClaims();
+            log.info("event_type" + eventMap.get("type"));
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
     }
 
 

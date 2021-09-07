@@ -89,6 +89,7 @@ public class UserController {
     public ResponseEntity<ServiceResponse> endpoint(String payload)
     {
         log.info(payload);
+        userService.processEndpoint(payload);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }
