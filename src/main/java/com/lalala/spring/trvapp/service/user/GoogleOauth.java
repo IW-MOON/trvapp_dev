@@ -10,7 +10,7 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.lalala.spring.trvapp.exception.ServerRuntimeException;
 import com.lalala.spring.trvapp.helper.HttpClientUtils;
 import com.lalala.spring.trvapp.model.OAuthResponse;
-import com.lalala.spring.trvapp.model.ServiceResponse;
+import com.lalala.spring.trvapp.model.UserResponse;
 import com.lalala.spring.trvapp.entity.User;
 import com.lalala.spring.trvapp.type.SocialAuthType;
 import lombok.RequiredArgsConstructor;
@@ -49,10 +49,10 @@ public class GoogleOauth implements SocialOauth {
     }
 
     @Override
-    public Optional<OAuthResponse> requestAccessToken(ServiceResponse serviceResponse) {
+    public Optional<OAuthResponse> requestAccessToken(UserResponse userResponse) {
 
         MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
-        params.add("code", serviceResponse.getCode());
+        params.add("code", userResponse.getCode());
         params.add("client_id", clientId);
         params.add("client_secret", clientSecret);
         params.add("redirect_uri", redirectUrl);
@@ -62,13 +62,13 @@ public class GoogleOauth implements SocialOauth {
     }
 
     @Override
-    public Optional<OAuthResponse> refreshAccessToken(ServiceResponse serviceResponse) {
+    public Optional<OAuthResponse> refreshAccessToken(UserResponse userResponse) {
 
         log.info(redirectUrl);
         MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
         params.add("client_id", clientId);
         params.add("client_secret", clientSecret);
-        params.add("refresh_token", serviceResponse.getRefreshToken());
+        params.add("refresh_token", userResponse.getRefreshToken());
         params.add("grant_type", "refresh_token");
 
         return httpClientUtils.getPostOAuthResponse(params, tokenBaseUrl);

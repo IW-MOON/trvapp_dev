@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 
 @Slf4j
@@ -34,12 +33,14 @@ public class WordsGenerate {
         Optional<ResponseEntity<String[]>> optNoun =  httpClientUtils.doGetResponseEntityArray(map, wordsNounUrl);
         Optional<ResponseEntity<String[]>> optAdjective =  httpClientUtils.doGetResponseEntityArray(map, wordsAdjectiveUrl);
 
+        int randNumber = (int)(Math.random()*10000);
         return optAdjective.map(
                 adjective -> {
                     return optNoun.map(
                             noun -> {
                                 nickName.append(adjective.getBody()[0]);
                                 nickName.append(noun.getBody()[0]);
+                                nickName.append(randNumber);
                                 return nickName.toString();
                             }
                     ).orElseThrow(ServerRuntimeException::new);

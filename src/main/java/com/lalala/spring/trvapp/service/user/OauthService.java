@@ -1,7 +1,7 @@
 package com.lalala.spring.trvapp.service.user;
 
 import com.lalala.spring.trvapp.model.OAuthResponse;
-import com.lalala.spring.trvapp.model.ServiceResponse;
+import com.lalala.spring.trvapp.model.UserResponse;
 import com.lalala.spring.trvapp.entity.User;
 import com.lalala.spring.trvapp.type.SocialAuthType;
 import lombok.RequiredArgsConstructor;
@@ -30,14 +30,14 @@ public class OauthService {
         }
     }
 
-    public Optional<OAuthResponse> requestAccessToken(SocialAuthType socialAuthType, ServiceResponse serviceResponse) {
+    public Optional<OAuthResponse> requestAccessToken(SocialAuthType socialAuthType, UserResponse userResponse) {
         SocialOauth socialOauth = this.findSocialOauthByType(socialAuthType);
-        return socialOauth.requestAccessToken(serviceResponse);
+        return socialOauth.requestAccessToken(userResponse);
     }
 
-    public Optional<OAuthResponse> refreshAccessToken(SocialAuthType socialAuthType, ServiceResponse serviceResponse) {
+    public Optional<OAuthResponse> refreshAccessToken(SocialAuthType socialAuthType, UserResponse userResponse) {
         SocialOauth socialOauth = this.findSocialOauthByType(socialAuthType);
-        return socialOauth.refreshAccessToken(serviceResponse);
+        return socialOauth.refreshAccessToken(userResponse);
     }
 
     private SocialOauth findSocialOauthByType(SocialAuthType socialAuthType) {

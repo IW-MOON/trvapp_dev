@@ -1,7 +1,7 @@
 package com.lalala.spring.trvapp.service.user;
 
 import com.lalala.spring.trvapp.model.OAuthResponse;
-import com.lalala.spring.trvapp.model.ServiceResponse;
+import com.lalala.spring.trvapp.model.UserResponse;
 import com.lalala.spring.trvapp.entity.User;
 import com.lalala.spring.trvapp.type.SocialAuthType;
 
@@ -20,8 +20,8 @@ public interface SocialOauth {
      * @param code API Server 에서 받아온 code
      * @return API 서버로 부터 응답받은 Json 형태의 결과를 string으로 반
      */
-    Optional<OAuthResponse> requestAccessToken(ServiceResponse serviceResponse);
-    Optional<OAuthResponse> refreshAccessToken(ServiceResponse serviceResponse);
+    Optional<OAuthResponse> requestAccessToken(UserResponse userResponse);
+    Optional<OAuthResponse> refreshAccessToken(UserResponse userResponse);
 
     User getUserInfo(String idToken);
 

@@ -1,12 +1,11 @@
 package com.lalala.spring.trvapp.service.user;
 
 import com.lalala.spring.trvapp.entity.Auth;
-import com.lalala.spring.trvapp.exception.ForbiddenException;
+import com.lalala.spring.trvapp.exception.BadRequestException;
 import com.lalala.spring.trvapp.exception.UnAuthorizedException;
-import com.lalala.spring.trvapp.helper.HttpClientUtils;
 import com.lalala.spring.trvapp.helper.JwtTokenProvider;
 import com.lalala.spring.trvapp.model.OAuthResponse;
-import com.lalala.spring.trvapp.model.ServiceResponse;
+import com.lalala.spring.trvapp.model.UserResponse;
 import com.lalala.spring.trvapp.entity.User;
 import com.lalala.spring.trvapp.entity.UserToken;
 import com.lalala.spring.trvapp.repository.AuthRepository;
@@ -21,7 +20,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import java.text.ParseException;
 import java.time.LocalDateTime;
@@ -42,13 +40,12 @@ public class UserService {
     private final WordsGenerate wordsGenerate;
 
 
-    public ResponseEntity<ServiceResponse> auth(SocialAuthType socialAuthType, ServiceResponse serviceResponse){
-
-        if(serviceResponse.getCode() == null){
+    public ResponseEntity<UserResponse> auth(SocialAuthType socialAuthType, UserResponse userResponse){
+        if(userResponse.getCode() == null){
             throw new UnAuthorizedException();
         }
 
-        Optional<OAuthResponse> optOAuthResponse = oauthService.requestAccessToken(socialAuthType, serviceResponse);
+        Optional<OAuthResponse> optOAuthResponse = oauthService.requestAccessToken(socialAuthType, userResponse);
         return optOAuthResponse.map(oAuthResponse -> {
 
             String jwt = jwtTokenProvider.encodeJwtToken(socialAuthType, oAuthResponse.getAccessToken(), oAuthResponse.getRefreshToken());
@@ -64,9 +61,7 @@ public class UserService {
                 User findUser = optFindUser.get();
                 findUser.updateLastLoginDtm();
 
-                Optional<UserToken> optUserToken =
-                userTokenRepository.findByUser(findUser);
-
+                Optional<UserToken> optUserToken = userTokenRepository.findByUser(findUser);
                 optUserToken.ifPresentOrElse(
                         findUserToken -> {
                             if(!findUserToken.getRefreshToken().equals(oAuthResponse.getRefreshToken()))
@@ -74,11 +69,8 @@ public class UserService {
                         },
                         () -> saveRefreshToken(findUser, oAuthResponse.getRefreshToken())
                 );
-
-                System.out.println("r = " + oAuthResponse.toString());
-
-                return new ResponseEntity<ServiceResponse>(
-                        ServiceResponse.builder()
+                return new ResponseEntity<UserResponse>(
+                        UserResponse.builder()
                                 .token(jwt)
                                 .accessToken(oAuthResponse.getAccessToken())
                                 .refreshToken(oAuthResponse.getRefreshToken())
@@ -94,8 +86,8 @@ public class UserService {
                         .joinYn("N").build();
                 long idx = authRepository.save(auth).getAuthIdx();
 
-                return new ResponseEntity<ServiceResponse>(
-                        ServiceResponse.builder()
+                return new ResponseEntity<UserResponse>(
+                        UserResponse.builder()
                                 .token(jwt)
                                 .idToken(idToken)
                                 .clientSecret(oAuthResponse.getClientSecret())
@@ -108,16 +100,16 @@ public class UserService {
 
     }
 
-    public ResponseEntity<ServiceResponse> join(SocialAuthType socialAuthType, ServiceResponse serviceResponse) throws UnAuthorizedException {
+    public ResponseEntity<UserResponse> join(SocialAuthType socialAuthType, UserResponse userResponse) throws UnAuthorizedException {
 
-        long authIdx = serviceResponse.getIdx();
+        long authIdx = userResponse.getIdx();
+        String token = userResponse.getToken();
+        String idToken = userResponse.getIdToken();
 
-        String token = serviceResponse.getToken();
-        if(token == null || !jwtTokenProvider.validateToken(token)){
-            throw new UnAuthorizedException();
+        if(token == null || idToken == null){
+            throw new BadRequestException();
         }
-        String idToken = serviceResponse.getIdToken();
-        if(idToken == null){
+        if(!jwtTokenProvider.validateToken(token)){
             throw new UnAuthorizedException();
         }
 
@@ -141,10 +133,10 @@ public class UserService {
         log.info(user.toString());
 
         User saveUser = userRepository.save(user);
-        saveRefreshToken(saveUser, serviceResponse.getRefreshToken());
+        saveRefreshToken(saveUser, userResponse.getRefreshToken());
 
-        return new ResponseEntity<ServiceResponse>(
-                ServiceResponse.builder()
+        return new ResponseEntity<UserResponse>(
+                UserResponse.builder()
                         .token(token)
                         .accessToken(accessToken)
                         .refreshToken(refreshToken)
@@ -153,19 +145,19 @@ public class UserService {
 
     }
 
-    public ResponseEntity<ServiceResponse> refreshToken(SocialAuthType socialAuthType, ServiceResponse serviceResponse){
+    public ResponseEntity<UserResponse> refreshToken(SocialAuthType socialAuthType, UserResponse userResponse){
 
         if(socialAuthType == SocialAuthType.APPLE){
-            if(serviceResponse.getClientSecret() == null){
-                throw new UnAuthorizedException();
+            if(userResponse.getClientSecret() == null){
+                throw new BadRequestException();
             }
         }
-        String refreshToken = serviceResponse.getRefreshToken();
+        String refreshToken = userResponse.getRefreshToken();
         if(refreshToken == null){
-            throw new UnAuthorizedException();
+            throw new BadRequestException();
         }
 
-        Optional<OAuthResponse> optOAuthResponse = oauthService.refreshAccessToken(socialAuthType, serviceResponse);
+        Optional<OAuthResponse> optOAuthResponse = oauthService.refreshAccessToken(socialAuthType, userResponse);
         return optOAuthResponse.map(oAuthResponse -> {
 
             Optional<UserToken> optUserToken =
@@ -178,12 +170,12 @@ public class UserService {
                     }, UnAuthorizedException::new
             );
 
-            String jwt = jwtTokenProvider.encodeJwtToken(socialAuthType, oAuthResponse.getAccessToken(), serviceResponse.getRefreshToken());
-            return new ResponseEntity<ServiceResponse>(
-                    ServiceResponse.builder()
+            String jwt = jwtTokenProvider.encodeJwtToken(socialAuthType, oAuthResponse.getAccessToken(), userResponse.getRefreshToken());
+            return new ResponseEntity<UserResponse>(
+                    UserResponse.builder()
                             .token(jwt)
                             .accessToken(oAuthResponse.getAccessToken())
-                            .refreshToken(serviceResponse.getRefreshToken())
+                            .refreshToken(userResponse.getRefreshToken())
                             .build(), HttpStatus.OK);
 
         }).orElseThrow(UnAuthorizedException::new);

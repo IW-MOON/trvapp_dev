@@ -76,26 +76,23 @@ public class AppleOauth implements SocialOauth{
     }
 
     @Override
-    public Optional<OAuthResponse> requestAccessToken(ServiceResponse serviceResponse){
+    public Optional<OAuthResponse> requestAccessToken(UserResponse userResponse){
 
-        String idToken = serviceResponse.getIdToken();
+        String idToken = userResponse.getIdToken();
         if(idToken == null){
             throw new UnAuthorizedException();
         }
-        String clientSecret = getAppleClientSecret(serviceResponse.getIdToken());
+        String clientSecret = getAppleClientSecret(userResponse.getIdToken());
         if(clientSecret == null){
             throw new UnAuthorizedException();
         }
-        log.info(clientSecret);
-
-        return validateAuthorizationGrantCode(clientSecret, serviceResponse.getCode());
+        return validateAuthorizationGrantCode(clientSecret, userResponse.getCode());
     }
 
     @Override
-    public Optional<OAuthResponse> refreshAccessToken(ServiceResponse serviceResponse) {
+    public Optional<OAuthResponse> refreshAccessToken(UserResponse userResponse) {
 
-
-        return validateAnExistingRefreshToken(serviceResponse.getClientSecret(), serviceResponse.getRefreshToken());
+        return validateAnExistingRefreshToken(userResponse.getClientSecret(), userResponse.getRefreshToken());
     }
 
     @Override
@@ -147,21 +144,13 @@ public class AppleOauth implements SocialOauth{
             SignedJWT signedJWT = SignedJWT.parse(idToken);
             JWTClaimsSet payload = signedJWT.getJWTClaimsSet();
             log.info(payload.toString());
-//            log.info(payload.getJWTID());
-//            log.info(payload.getExpirationTime().toString());
-//
-//            log.info(payload.getStringClaim("email"));
+
             // EXP
             Date currentTime = new Date(System.currentTimeMillis());
             log.info(currentTime.toString());
             if (!currentTime.before(payload.getExpirationTime())) {
                 return false;
             }
-
-            // NONCE(Test value), ISS, AUD
-//            if (!"20B20D-0S8-1K8".equals(payload.getClaim("nonce")) || !IS.equals(payload.getIssuer()) || !AUD.equals(payload.getAudience().get(0))) {
-//                return false;
-//            }
 
             // RSA
             if (verifyPublicKey(signedJWT)) {

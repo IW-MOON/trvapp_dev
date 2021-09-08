@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 //@JsonNaming(PropertyNamingStrategy.LowerCaseStrategy)
 @JsonIgnoreProperties(ignoreUnknown=true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ServiceResponse {
+public class UserResponse {
 
     private String state;
     private String code;
@@ -28,7 +28,6 @@ public class ServiceResponse {
     private String token;
     private String clientSecret;
     private boolean isJoined;
-    //private SocialAuthType socialAuthType;
     private Long idx;
 
 }

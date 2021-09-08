@@ -5,7 +5,7 @@ package com.lalala.spring.trvapp.controller;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import com.lalala.spring.trvapp.model.ServiceResponse;
+import com.lalala.spring.trvapp.model.UserResponse;
 import com.lalala.spring.trvapp.service.user.UserService;
 import com.lalala.spring.trvapp.type.SocialAuthType;
 import lombok.RequiredArgsConstructor;
@@ -36,11 +36,11 @@ public class UserController {
     // 로그인
     //CrossOrigin(origins = "http://localhost:8080")
     @RequestMapping( value = "/auth/{socialLoginType}", method = {RequestMethod.GET, RequestMethod.POST})
-    public ResponseEntity<ServiceResponse> callback(
+    public ResponseEntity<UserResponse> callback(
             @PathVariable(name = "socialLoginType") SocialAuthType socialAuthType,
             @RequestParam Map<String, Object> responseMap
-            ) {
-        log.info(responseMap.toString());
+    )
+    {
         ObjectMapper mapper = new ObjectMapper();
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
@@ -48,31 +48,28 @@ public class UserController {
             mapper.setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE);
         }
 
-        ServiceResponse serviceResponse = mapper.convertValue(responseMap, ServiceResponse.class);
-        log.info(socialAuthType.toString());
-        log.info(serviceResponse.toString());
-        //return  new ResponseEntity<>(HttpStatus.OK);
-        return userService.auth(socialAuthType, serviceResponse);
+        UserResponse userResponse = mapper.convertValue(responseMap, UserResponse.class);
+        return userService.auth(socialAuthType, userResponse);
     }
 
     @PostMapping( value = "/join/{socialLoginType}")
-    public ResponseEntity<ServiceResponse> join(
+    public ResponseEntity<UserResponse> join(
             @PathVariable(name = "socialLoginType") SocialAuthType socialAuthType,
-            ServiceResponse serviceResponse
+            UserResponse userResponse
     ) {
         log.info(socialAuthType.toString());
-        log.info(serviceResponse.toString());
+        log.info(userResponse.toString());
 
-        return userService.join(socialAuthType, serviceResponse);
+        return userService.join(socialAuthType, userResponse);
     }
 
     @PostMapping(value = "/auth/{socialLoginType}/refresh_token")
-    public ResponseEntity<ServiceResponse> refreshToken(
+    public ResponseEntity<UserResponse> refreshToken(
             @PathVariable(name = "socialLoginType") SocialAuthType socialAuthType,
-            ServiceResponse serviceResponse
+            UserResponse userResponse
     ) {
 
-        return userService.refreshToken(socialAuthType, serviceResponse);
+        return userService.refreshToken(socialAuthType, userResponse);
     }
 
     @GetMapping(value = "/check")
@@ -86,7 +83,7 @@ public class UserController {
     }
 
     @PostMapping(value = "/endpoint")
-    public ResponseEntity<ServiceResponse> endpoint(String payload)
+    public ResponseEntity<UserResponse> endpoint(String payload)
     {
         log.info(payload);
         userService.processEndpoint(payload);
