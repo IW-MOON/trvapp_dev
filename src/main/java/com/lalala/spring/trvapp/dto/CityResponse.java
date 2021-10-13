@@ -1,4 +1,4 @@
-package com.lalala.spring.trvapp.model;
+package com.lalala.spring.trvapp.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-//@JsonNaming(PropertyNamingStrategy.LowerCaseStrategy)
 @JsonIgnoreProperties(ignoreUnknown=true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CityResponse {
