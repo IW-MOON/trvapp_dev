@@ -1,8 +1,8 @@
-package com.lalala.spring.trvapp.service.user;
+package com.lalala.spring.trvapp.service.city;
 
 import com.lalala.spring.trvapp.entity.City;
 import com.lalala.spring.trvapp.exception.BadRequestException;
-import com.lalala.spring.trvapp.model.CityResponse;
+import com.lalala.spring.trvapp.dto.CityResponse;
 import com.lalala.spring.trvapp.repository.CityRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
