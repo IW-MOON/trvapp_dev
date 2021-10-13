@@ -4,7 +4,6 @@ import com.lalala.spring.trvapp.dto.UserResponse;
 import com.lalala.spring.trvapp.entity.User;
 import com.lalala.spring.trvapp.vo.oauth.OAuthResponseVO;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeResourceDetails;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -14,11 +13,11 @@ public class FacebookOauth implements SocialOauth{
 
     @Value("${server.protocol}://${server.out-address}:${server.out-port}/user/auth/facebook")
     private String redirectUrl;
-    @Value("${external.auth.facebook.client_id}")
+    @Value("${external.auth.facebook.client.client_id}")
     private String clientId;
-    @Value("${external.auth.facebook.client_secret}")
+    @Value("${external.auth.facebook.client.client_secret}")
     private String clientSecret;
-    @Value("${external.auth.facebook.access_token_url}")
+    @Value("${external.auth.facebook.client.access_token_url}")
     private String tokenBaseUrl;
 
     @Override
