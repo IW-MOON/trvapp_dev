@@ -24,6 +24,13 @@ public class JwtTokenProvider {
     private String alg;
     @Value("${token.secret-key}")
     private String secretKey;
+    @Value("${token.expire_time.apple}")
+    private long appleExpTime;
+    @Value("${token.expire_time.google}")
+    private long googleExpTime;
+    @Value("${token.issuer}")
+    private String issuer;
+
 
     public String encodeJwtToken(SocialAuthType socialAuthType,  String accessToken, String refreshToken) {
 
@@ -32,9 +39,9 @@ public class JwtTokenProvider {
             Date now = new Date();
             long expTime;
             if (socialAuthType == SocialAuthType.APPLE){
-                expTime = 3600000L * 24;	// 유효시간 : 1DAY
+                expTime = appleExpTime;	// 유효시간 : 1DAY
             } else {
-                expTime = 3600000L;	// 유효시간 : 1H
+                expTime = googleExpTime;	// 유효시간 : 1H
             }
 
             SecretKey key = Keys.hmacShaKeyFor(secretKey.getBytes("UTF-8"));
@@ -45,7 +52,7 @@ public class JwtTokenProvider {
 
             jwt = Jwts.builder()
                     .setHeader(header)
-                    .setIssuer("LaLaLa_TrvApp")
+                    .setIssuer(issuer)
                     .setIssuedAt(now)
                     .setExpiration(new Date(System.currentTimeMillis() + expTime))
                     .claim("access_token", accessToken)
@@ -60,7 +67,7 @@ public class JwtTokenProvider {
         return jwt;
     }
 
-    public boolean validateToken(String jwt) {
+    public boolean isValidateToken(String jwt) {
         try {
             Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey.getBytes("UTF-8")).parseClaimsJws(jwt);
             Date exp = claims.getBody().getExpiration();

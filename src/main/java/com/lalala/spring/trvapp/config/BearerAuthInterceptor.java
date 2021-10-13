@@ -33,7 +33,7 @@ public class BearerAuthInterceptor implements HandlerInterceptor {
             throw new UnAuthorizedException();
         }
 
-        if (!jwtTokenProvider.validateToken(token)) {
+        if (!jwtTokenProvider.isValidateToken(token)) {
             throw new ForbiddenException();
         }
 

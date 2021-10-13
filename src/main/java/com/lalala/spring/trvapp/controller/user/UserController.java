@@ -1,11 +1,11 @@
-package com.lalala.spring.trvapp.controller;
+package com.lalala.spring.trvapp.controller.user;
 
 
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import com.lalala.spring.trvapp.model.UserResponse;
+import com.lalala.spring.trvapp.dto.UserResponse;
 import com.lalala.spring.trvapp.service.user.UserService;
 import com.lalala.spring.trvapp.type.SocialAuthType;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +23,6 @@ import java.util.Map;
 @RequestMapping(value = "user")
 @RequiredArgsConstructor
 public class UserController {
-
 
     private final UserService userService;
 
@@ -68,7 +67,9 @@ public class UserController {
             @PathVariable(name = "socialLoginType") SocialAuthType socialAuthType,
             UserResponse userResponse
     ) {
-
+        if (socialAuthType == SocialAuthType.FACEBOOK) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
         return userService.refreshToken(socialAuthType, userResponse);
     }
 

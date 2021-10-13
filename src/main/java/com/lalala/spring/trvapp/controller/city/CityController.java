@@ -1,8 +1,8 @@
-package com.lalala.spring.trvapp.controller;
+package com.lalala.spring.trvapp.controller.city;
 
 
-import com.lalala.spring.trvapp.model.CityResponse;
-import com.lalala.spring.trvapp.service.user.CityService;
+import com.lalala.spring.trvapp.dto.CityResponse;
+import com.lalala.spring.trvapp.service.city.CityService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;

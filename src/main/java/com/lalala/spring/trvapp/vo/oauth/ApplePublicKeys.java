@@ -1,4 +1,4 @@
-package com.lalala.spring.trvapp.model;
+package com.lalala.spring.trvapp.vo.oauth;
 
 import lombok.Getter;
 

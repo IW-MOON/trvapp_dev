@@ -1,4 +1,4 @@
-package com.lalala.spring.trvapp.service.user;
+package com.lalala.spring.trvapp.service.oauth;
 
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
@@ -8,11 +8,10 @@ import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.lalala.spring.trvapp.exception.ServerRuntimeException;
-import com.lalala.spring.trvapp.helper.HttpClientUtils;
-import com.lalala.spring.trvapp.model.OAuthResponse;
-import com.lalala.spring.trvapp.model.UserResponse;
+import com.lalala.spring.trvapp.dto.UserResponse;
 import com.lalala.spring.trvapp.entity.User;
 import com.lalala.spring.trvapp.type.SocialAuthType;
+import com.lalala.spring.trvapp.vo.oauth.OAuthResponseVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,11 +36,9 @@ public class GoogleOauth implements SocialOauth {
     private String clientId;
     @Value("${external.auth.google.client_secret}")
     private String clientSecret;
-    @Value("${external.auth.google.token_base_url}")
+    @Value("${external.auth.google.token_url}")
     private String tokenBaseUrl;
 
-
-    private final HttpClientUtils httpClientUtils;
 
     @Override
     public String getOauthRedirectURL() {
@@ -49,7 +46,7 @@ public class GoogleOauth implements SocialOauth {
     }
 
     @Override
-    public Optional<OAuthResponse> requestAccessToken(UserResponse userResponse) {
+    public Optional<OAuthResponseVO> requestAccessToken(UserResponse userResponse) {
 
         MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
         params.add("code", userResponse.getCode());
@@ -58,11 +55,11 @@ public class GoogleOauth implements SocialOauth {
         params.add("redirect_uri", redirectUrl);
         params.add("grant_type", "authorization_code");
 
-        return httpClientUtils.getPostOAuthResponse(params, tokenBaseUrl);
+        return getPostOAuthResponse(params, tokenBaseUrl);
     }
 
     @Override
-    public Optional<OAuthResponse> refreshAccessToken(UserResponse userResponse) {
+    public Optional<OAuthResponseVO> refreshAccessToken(UserResponse userResponse) {
 
         log.info(redirectUrl);
         MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
@@ -71,7 +68,7 @@ public class GoogleOauth implements SocialOauth {
         params.add("refresh_token", userResponse.getRefreshToken());
         params.add("grant_type", "refresh_token");
 
-        return httpClientUtils.getPostOAuthResponse(params, tokenBaseUrl);
+        return getPostOAuthResponse(params, tokenBaseUrl);
     }
 
     @Override
@@ -82,7 +79,6 @@ public class GoogleOauth implements SocialOauth {
 
         GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(transport, jsonFactory)
                 .setAudience(Collections.singletonList(clientId))
-                //.setAudience(Arrays.asList(CLIENT_ID_1, CLIENT_ID_2, CLIENT_ID_3))
                 .build();
         User googleUser = null;
         String userId = null;

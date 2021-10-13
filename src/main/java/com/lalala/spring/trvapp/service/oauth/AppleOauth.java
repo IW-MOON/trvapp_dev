@@ -1,4 +1,4 @@
-package com.lalala.spring.trvapp.service.user;
+package com.lalala.spring.trvapp.service.oauth;
 
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -6,11 +6,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.lalala.spring.trvapp.dto.UserResponse;
 import com.lalala.spring.trvapp.entity.User;
 import com.lalala.spring.trvapp.exception.UnAuthorizedException;
 import com.lalala.spring.trvapp.helper.HttpClientUtils;
-import com.lalala.spring.trvapp.model.*;
 import com.lalala.spring.trvapp.type.SocialAuthType;
+import com.lalala.spring.trvapp.vo.oauth.ApplePublicKey;
+import com.lalala.spring.trvapp.vo.oauth.ApplePublicKeys;
+import com.lalala.spring.trvapp.vo.oauth.OAuthResponseVO;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.ECDSASigner;
 import com.nimbusds.jose.crypto.RSASSAVerifier;
@@ -50,9 +53,12 @@ public class AppleOauth implements SocialOauth{
     @Value("${server.protocol}://${server.out-address}/user/auth/apple" )
     private String redirectUrl;
     @Value("${external.auth.apple.token_url}" )
-    private String tokenUrl;
+    private String tokenBaseUrl;
     @Value("${external.auth.apple.public_key_url}" )
     private String publicKeyUrl;
+
+    @Value("${token.expire_time.apple}")
+    private long appleExpTime;
 
     @Value("${external.auth.apple.client_id}")
     private String clientId;
@@ -76,7 +82,7 @@ public class AppleOauth implements SocialOauth{
     }
 
     @Override
-    public Optional<OAuthResponse> requestAccessToken(UserResponse userResponse){
+    public Optional<OAuthResponseVO> requestAccessToken(UserResponse userResponse){
 
         String idToken = userResponse.getIdToken();
         if(idToken == null){
@@ -90,7 +96,7 @@ public class AppleOauth implements SocialOauth{
     }
 
     @Override
-    public Optional<OAuthResponse> refreshAccessToken(UserResponse userResponse) {
+    public Optional<OAuthResponseVO> refreshAccessToken(UserResponse userResponse) {
 
         return validateAnExistingRefreshToken(userResponse.getClientSecret(), userResponse.getRefreshToken());
     }
@@ -101,10 +107,8 @@ public class AppleOauth implements SocialOauth{
         User appleUser = null;
 
         try {
-
             SignedJWT signedJWT = SignedJWT.parse(idToken);
             JWTClaimsSet payload = signedJWT.getJWTClaimsSet();
-
             String email = payload.getStringClaim("email");
 
             if (email == null)
@@ -215,7 +219,7 @@ public class AppleOauth implements SocialOauth{
             JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
                     .issuer(teamId)
                     .issueTime(now)
-                    .expirationTime(new Date(now.getTime() + (3600000 * 24)))
+                    .expirationTime(new Date(now.getTime() + (appleExpTime)))
                     .audience(iss)
                     .subject(clientId).build();
 
@@ -265,7 +269,7 @@ public class AppleOauth implements SocialOauth{
      *
      * @return
      */
-    public Optional<OAuthResponse> validateAuthorizationGrantCode(String clientSecret, String code) {
+    public Optional<OAuthResponseVO> validateAuthorizationGrantCode(String clientSecret, String code) {
 
 
         MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
@@ -276,14 +280,14 @@ public class AppleOauth implements SocialOauth{
         params.add("redirect_uri", redirectUrl);
         params.add("grant_type", "authorization_code");
 
-        Optional<OAuthResponse> optOAuthResponse = httpClientUtils.getPostOAuthResponse(params, tokenUrl);
+        Optional<OAuthResponseVO> optOAuthResponseVO = getPostOAuthResponse(params, tokenBaseUrl);
 
-        optOAuthResponse.ifPresent(
+        optOAuthResponseVO.ifPresent(
                 oAuthResponse -> {
                     oAuthResponse.setClientSecret(clientSecret);
                 }
         );
-        return optOAuthResponse;
+        return optOAuthResponseVO;
     }
 
     /**
@@ -294,7 +298,7 @@ public class AppleOauth implements SocialOauth{
      * @param refreshToken
      * @return
      */
-    public Optional<OAuthResponse> validateAnExistingRefreshToken(String clientSecret, String refreshToken) {
+    public Optional<OAuthResponseVO> validateAnExistingRefreshToken(String clientSecret, String refreshToken) {
 
         MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
 
@@ -303,7 +307,7 @@ public class AppleOauth implements SocialOauth{
         params.add("grant_type", "refresh_token");
         params.add("refresh_token", refreshToken);
 
-        return httpClientUtils.getPostOAuthResponse(params, tokenUrl);
+        return getPostOAuthResponse(params, tokenBaseUrl);
     }
 
 

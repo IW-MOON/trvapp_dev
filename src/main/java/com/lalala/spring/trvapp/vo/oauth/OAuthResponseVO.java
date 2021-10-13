@@ -1,9 +1,9 @@
-package com.lalala.spring.trvapp.model;
+package com.lalala.spring.trvapp.vo.oauth;
 
 import lombok.Data;
 
 @Data
-public class OAuthResponse {
+public class OAuthResponseVO {
 
     private String accessToken;
     private String expiresIn;

@@ -1,7 +1,6 @@
-package com.lalala.spring.trvapp.service.user;
+package com.lalala.spring.trvapp.helper;
 
 import com.lalala.spring.trvapp.exception.ServerRuntimeException;
-import com.lalala.spring.trvapp.helper.HttpClientUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -9,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 @Slf4j
@@ -38,8 +38,8 @@ public class WordsGenerate {
                 adjective -> {
                     return optNoun.map(
                             noun -> {
-                                nickName.append(adjective.getBody()[0]);
-                                nickName.append(noun.getBody()[0]);
+                                nickName.append(Objects.requireNonNull(adjective.getBody())[0]);
+                                nickName.append(Objects.requireNonNull(noun.getBody())[0]);
                                 nickName.append(randNumber);
                                 return nickName.toString();
                             }
