@@ -40,6 +40,7 @@ public class UserController {
             @RequestParam Map<String, Object> responseMap
     )
     {
+        System.out.println("socialAuthType = " + socialAuthType);
         ObjectMapper mapper = new ObjectMapper();
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
