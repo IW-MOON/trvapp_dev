@@ -3,12 +3,17 @@ package com.lalala.spring.trvapp.service.oauth;
 import com.lalala.spring.trvapp.dto.UserResponse;
 import com.lalala.spring.trvapp.entity.User;
 import com.lalala.spring.trvapp.vo.oauth.OAuthResponseVO;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 import java.util.Optional;
-
+@Slf4j
+@Component
+@RequiredArgsConstructor
 public class FacebookOauth implements SocialOauth{
 
     @Value("${server.protocol}://${server.out-address}:${server.out-port}/user/auth/facebook")
