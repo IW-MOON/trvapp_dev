@@ -16,7 +16,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class FacebookOauth implements SocialOauth{
 
-    @Value("${server.protocol}://${server.out-address}:${server.out-port}/user/auth/facebook")
+    @Value("${server.protocol}://${server.out-address}/user/auth/facebook")
     private String redirectUrl;
     @Value("${external.auth.facebook.client.client_id}")
     private String clientId;
