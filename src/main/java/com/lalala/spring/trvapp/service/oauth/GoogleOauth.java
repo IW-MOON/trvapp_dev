@@ -49,7 +49,7 @@ public class GoogleOauth implements SocialOauth {
     @Override
     public Optional<OAuthResponseVO> requestAccessToken(UserResponse userResponse) {
 
-        MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("code", userResponse.getCode());
         params.add("client_id", clientId);
         params.add("client_secret", clientSecret);
@@ -63,7 +63,7 @@ public class GoogleOauth implements SocialOauth {
     public Optional<OAuthResponseVO> refreshAccessToken(UserResponse userResponse) {
 
         log.info(redirectUrl);
-        MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("client_id", clientId);
         params.add("client_secret", clientSecret);
         params.add("refresh_token", userResponse.getRefreshToken());

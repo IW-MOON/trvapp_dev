@@ -272,7 +272,7 @@ public class AppleOauth implements SocialOauth{
     public Optional<OAuthResponseVO> validateAuthorizationGrantCode(String clientSecret, String code) {
 
 
-        MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 
         params.add("code", code);
         params.add("client_id", clientId);
@@ -300,7 +300,7 @@ public class AppleOauth implements SocialOauth{
      */
     public Optional<OAuthResponseVO> validateAnExistingRefreshToken(String clientSecret, String refreshToken) {
 
-        MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 
         params.add("client_id", clientId);
         params.add("client_secret", clientSecret);
