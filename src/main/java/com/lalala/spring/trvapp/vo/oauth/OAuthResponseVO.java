@@ -6,7 +6,7 @@ import lombok.Data;
 public class OAuthResponseVO {
 
     private String accessToken;
-    private String expiresIn;
+    private long expiresIn;
     private String refreshToken;
     private String scope;
     private String tokenType;
@@ -15,5 +15,7 @@ public class OAuthResponseVO {
     private String state;
     private Object user;
     private String clientSecret;
-
+    private String name;
+    private String id;
+    private String email;
 }

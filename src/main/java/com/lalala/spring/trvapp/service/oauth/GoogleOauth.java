@@ -72,7 +72,7 @@ public class GoogleOauth implements SocialOauth {
     }
 
     @Override
-    public User getUserInfo(String idToken) {
+    public User getUserInfo(String idToken, String accessToken) {
 
         HttpTransport transport = new NetHttpTransport();
         JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();

@@ -48,25 +48,25 @@ public class UserService {
         }
 
         Optional<OAuthResponseVO> optOAuthResponseVO = oauthService.requestAccessToken(socialAuthType, userResponse);
-        return optOAuthResponseVO.map(oAuthResponse -> {
+        return optOAuthResponseVO.map(oAuthResponseVO -> {
 
-            System.out.println("oAuthResponse = " + oAuthResponse);
-            String jwt = jwtTokenProvider.encodeJwtToken(socialAuthType, oAuthResponse.getAccessToken(), oAuthResponse.getRefreshToken());
-            String idToken = oAuthResponse.getIdToken();
+            System.out.println("oAuthResponse = " + oAuthResponseVO);
+            String jwt = jwtTokenProvider.encodeJwtToken(socialAuthType, oAuthResponseVO);
+            String idToken = oAuthResponseVO.getIdToken();
 
-            User user = oauthService.getUserInfo(socialAuthType, idToken);
+            User user = oauthService.getUserInfo(socialAuthType, idToken, oAuthResponseVO.getAccessToken());
 
             Optional<User> optFindUser =
                     userRepository.findBySocialUniqId(user.getSocialUniqId());
 
             if(optFindUser.isPresent()){
-                this.userLogin(optFindUser, oAuthResponse.getRefreshToken());
+                this.userLogin(optFindUser, oAuthResponseVO.getRefreshToken());
                 return new ResponseEntity<UserResponse>(
                         UserResponse.builder()
                                 .token(jwt)
-                                .accessToken(oAuthResponse.getAccessToken())
-                                .refreshToken(oAuthResponse.getRefreshToken())
-                                .clientSecret(oAuthResponse.getClientSecret())
+                                .accessToken(oAuthResponseVO.getAccessToken())
+                                .refreshToken(oAuthResponseVO.getRefreshToken())
+                                .clientSecret(oAuthResponseVO.getClientSecret())
                                 .isJoined(true)
                                 .build(), HttpStatus.OK);
 
@@ -77,7 +77,7 @@ public class UserService {
                         UserResponse.builder()
                                 .token(jwt)
                                 .idToken(idToken)
-                                .clientSecret(oAuthResponse.getClientSecret())
+                                .clientSecret(oAuthResponseVO.getClientSecret())
                                 .isJoined(false)
                                 .idx(idx)
                                 .build(), HttpStatus.OK);
@@ -128,6 +128,7 @@ public class UserService {
         String accessToken = jwtTokenProvider.getClaim(token, "access_token");
         String refreshToken = jwtTokenProvider.getClaim(token, "refresh_token");
 
+        userResponse.setAccessToken(accessToken);
         this.saveUser(socialAuthType, userResponse);
 
         return new ResponseEntity<UserResponse>(
@@ -158,7 +159,7 @@ public class UserService {
 
     private void saveUser(SocialAuthType socialAuthType, UserResponse userResponse) {
 
-        User user = oauthService.getUserInfo(socialAuthType, userResponse.getIdToken());
+        User user = oauthService.getUserInfo(socialAuthType, userResponse.getIdToken(), userResponse.getAccessToken());
         String nickName = wordsGenerate.generateNickName();
         user.setNickName(nickName);
         log.info(user.toString());
@@ -183,7 +184,7 @@ public class UserService {
         return optOAuthResponseVO.map(oAuthResponse -> {
 
             this.updateRefreshToken(userResponse, oAuthResponse);
-            String jwt = jwtTokenProvider.encodeJwtToken(socialAuthType, oAuthResponse.getAccessToken(), userResponse.getRefreshToken());
+            String jwt = jwtTokenProvider.encodeJwtToken(socialAuthType, oAuthResponse);
             return new ResponseEntity<UserResponse>(
                     UserResponse.builder()
                             .token(jwt)

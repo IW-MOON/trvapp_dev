@@ -102,7 +102,7 @@ public class AppleOauth implements SocialOauth{
     }
 
     @Override
-    public User getUserInfo(String idToken) {
+    public User getUserInfo(String idToken, String accessToken) {
 
         User appleUser = null;
 

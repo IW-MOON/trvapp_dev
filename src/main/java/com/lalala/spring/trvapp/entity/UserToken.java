@@ -21,7 +21,6 @@ public class UserToken extends BaseEntity {
     @Column(name = "USER_TOKEN_IDX",  nullable = false)
     private Long userTokenIdx;
 
-    //@Column(name = "USER_IDX",  nullable = false)
     @OneToOne
     @JoinColumn(name = "USER_IDX")
     private User user;

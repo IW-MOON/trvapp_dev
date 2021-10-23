@@ -33,7 +33,7 @@ public interface SocialOauth {
     Optional<OAuthResponseVO> requestAccessToken(UserResponse userResponse);
     Optional<OAuthResponseVO> refreshAccessToken(UserResponse userResponse);
 
-    User getUserInfo(String idToken);
+    User getUserInfo(String idToken, String accessToken);
 
     default SocialAuthType type() {
         if (this instanceof GoogleOauth) {

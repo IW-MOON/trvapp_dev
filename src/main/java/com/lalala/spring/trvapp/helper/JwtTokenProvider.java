@@ -1,6 +1,7 @@
 package com.lalala.spring.trvapp.helper;
 
 import com.lalala.spring.trvapp.type.SocialAuthType;
+import com.lalala.spring.trvapp.vo.oauth.OAuthResponseVO;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
@@ -32,15 +33,16 @@ public class JwtTokenProvider {
     private String issuer;
 
 
-    public String encodeJwtToken(SocialAuthType socialAuthType,  String accessToken, String refreshToken) {
+    public String encodeJwtToken(SocialAuthType socialAuthType, OAuthResponseVO oAuthResponseVO) {
 
         String jwt = null;
         try {
             Date now = new Date();
-            long expTime;
+            long expTime = oAuthResponseVO.getExpiresIn();
+
             if (socialAuthType == SocialAuthType.APPLE){
                 expTime = appleExpTime;	// 유효시간 : 1DAY
-            } else {
+            } else if(socialAuthType == SocialAuthType.GOOGLE){
                 expTime = googleExpTime;	// 유효시간 : 1H
             }
 
@@ -55,8 +57,8 @@ public class JwtTokenProvider {
                     .setIssuer(issuer)
                     .setIssuedAt(now)
                     .setExpiration(new Date(System.currentTimeMillis() + expTime))
-                    .claim("access_token", accessToken)
-                    .claim("refresh_token", refreshToken)
+                    .claim("access_token", oAuthResponseVO.getAccessToken())
+                    .claim("refresh_token", oAuthResponseVO.getRefreshToken())
                     .signWith(key)
                     .compact();
 
