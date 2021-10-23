@@ -55,7 +55,7 @@ public interface SocialOauth {
         }
     }
 
-    default Optional<OAuthResponseVO> getOAuthResponse(MultiValueMap<String, Object> params, RequestMethod requestMethod, String url) {
+    default Optional<OAuthResponseVO> getOAuthResponse(MultiValueMap<String, String> params, RequestMethod requestMethod, String url) {
 
         HttpClientUtils httpClientUtils = new HttpClientUtils();
         Optional<ResponseEntity<String>> optionalResponseEntity;

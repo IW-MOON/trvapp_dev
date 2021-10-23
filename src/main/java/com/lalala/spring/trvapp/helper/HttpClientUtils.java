@@ -13,7 +13,7 @@ import java.util.Optional;
 @Component
 public class HttpClientUtils {
 
-    public Optional<ResponseEntity<String>> doPostResponseEntity(MultiValueMap<String, Object> params, String url) {
+    public Optional<ResponseEntity<String>> doPostResponseEntity(MultiValueMap<String, String> params, String url) {
 
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> responseEntity = null;
@@ -30,7 +30,7 @@ public class HttpClientUtils {
         return Optional.of(responseEntity);
     }
 
-    public Optional<ResponseEntity<String>> doGetResponseEntity(MultiValueMap<String, Object> params, String url) {
+    public Optional<ResponseEntity<String>> doGetResponseEntity(MultiValueMap<String, String> params, String url) {
 
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> responseEntity = null;
@@ -45,7 +45,7 @@ public class HttpClientUtils {
         return Optional.of(responseEntity);
     }
 
-    public Optional<ResponseEntity<String[]>> doGetResponseEntityArray(Map<String, Object> params, String url) {
+    public Optional<ResponseEntity<String[]>> doGetResponseEntityArray(Map<String, String> params, String url) {
 
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String[]> responseEntity = null;

@@ -39,7 +39,7 @@ public class FacebookOauth implements SocialOauth{
     @Override
     public Optional<OAuthResponseVO> requestAccessToken(UserResponse userResponse) {
 
-        MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("code", userResponse.getCode());
         params.add("client_id", clientId);
         params.add("client_secret", clientSecret);
@@ -56,7 +56,7 @@ public class FacebookOauth implements SocialOauth{
     @Override
     public User getUserInfo(String idToken, String accessToken) {
 
-        MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("access_token", accessToken);
 
         Optional<OAuthResponseVO> optOAuthResponseVO = getOAuthResponse(params, RequestMethod.GET, userInfoUrl);

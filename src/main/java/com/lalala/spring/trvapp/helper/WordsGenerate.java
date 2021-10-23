@@ -25,7 +25,7 @@ public class WordsGenerate {
     public String generateNickName() throws ServerRuntimeException{
 
         StringBuffer nickName = new StringBuffer();
-        Map<String, Object> map = new LinkedHashMap<>();
+        Map<String, String> map = new LinkedHashMap<>();
 
         String wordsNounUrl = wordsApiUrl.concat(wordsNounUri);
         String wordsAdjectiveUrl = wordsApiUrl.concat(wordsAdjectiveUri);
