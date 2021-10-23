@@ -182,9 +182,7 @@ public class AppleOauth implements SocialOauth{
         mapper.setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE);
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
-        Map<String, Object> map = new LinkedHashMap<>();
-
-        Optional<ResponseEntity<String>> result =  httpClientUtils.doGetResponseEntity(map, publicKeyUrl);
+        Optional<ResponseEntity<String>> result =  httpClientUtils.doGetResponseEntity(null, publicKeyUrl);
         return result.map(
             responseEntity -> {
 

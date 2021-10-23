@@ -117,9 +117,13 @@ public class UserService {
         String token = userResponse.getToken();
         String idToken = userResponse.getIdToken();
 
-        if(token == null || idToken == null){
+        if(token == null){
             throw new BadRequestException();
         }
+        if(socialAuthType != SocialAuthType.FACEBOOK && idToken == null){
+            throw new BadRequestException();
+        }
+
         if(!jwtTokenProvider.isValidateToken(token)){
             throw new UnAuthorizedException();
         }

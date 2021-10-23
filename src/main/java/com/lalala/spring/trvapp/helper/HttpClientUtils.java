@@ -30,12 +30,11 @@ public class HttpClientUtils {
         return Optional.of(responseEntity);
     }
 
-    public Optional<ResponseEntity<String>> doGetResponseEntity(Map<String, Object> params, String url) {
+    public Optional<ResponseEntity<String>> doGetResponseEntity(MultiValueMap<String, Object> params, String url) {
 
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> responseEntity = null;
         try {
-
             responseEntity =
                     restTemplate.getForEntity(url, String.class, params );
 
