@@ -7,7 +7,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URI;
 import java.util.Map;
 import java.util.Optional;
 @Component
@@ -35,8 +38,9 @@ public class HttpClientUtils {
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> responseEntity = null;
         try {
+            URI uri = UriComponentsBuilder.fromHttpUrl(url).queryParams(params).build().toUri();
             responseEntity =
-                    restTemplate.getForEntity(url, String.class, params );
+                    restTemplate.getForEntity(uri, String.class );
 
         } catch (Exception e) {
             e.printStackTrace();
