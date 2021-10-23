@@ -130,7 +130,8 @@ public class UserService {
         this.checkPrevAuth(userResponse);
 
         String accessToken = jwtTokenProvider.getClaim(token, "access_token");
-        String refreshToken = jwtTokenProvider.getClaim(token, "refresh_token");
+        String refreshToken =
+                socialAuthType == SocialAuthType.FACEBOOK ? null : jwtTokenProvider.getClaim(token, "refresh_token");
 
         userResponse.setAccessToken(accessToken);
         this.saveUser(socialAuthType, userResponse);
