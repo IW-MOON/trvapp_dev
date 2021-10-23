@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -44,7 +45,7 @@ public class FacebookOauth implements SocialOauth{
         params.add("client_secret", clientSecret);
         params.add("redirect_uri", redirectUrl);
 
-        return getPostOAuthResponse(params, tokenBaseUrl);
+        return getOAuthResponse(params, RequestMethod.POST, tokenBaseUrl);
     }
 
     @Override
@@ -58,7 +59,7 @@ public class FacebookOauth implements SocialOauth{
         MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
         params.add("access_token", accessToken);
 
-        Optional<OAuthResponseVO> optOAuthResponseVO = getPostOAuthResponse(params, userInfoUrl);
+        Optional<OAuthResponseVO> optOAuthResponseVO = getOAuthResponse(params, RequestMethod.GET, userInfoUrl);
         if(optOAuthResponseVO.isEmpty()){
             throw new ServerRuntimeException();
         }

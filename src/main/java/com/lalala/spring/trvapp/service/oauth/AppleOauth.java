@@ -23,6 +23,7 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.protocol.HTTP;
 import org.bouncycastle.util.io.pem.PemObject;
 import org.bouncycastle.util.io.pem.PemReader;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,6 +32,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.io.FileReader;
 import java.io.IOException;
@@ -280,7 +282,7 @@ public class AppleOauth implements SocialOauth{
         params.add("redirect_uri", redirectUrl);
         params.add("grant_type", "authorization_code");
 
-        Optional<OAuthResponseVO> optOAuthResponseVO = getPostOAuthResponse(params, tokenBaseUrl);
+        Optional<OAuthResponseVO> optOAuthResponseVO = getOAuthResponse(params, RequestMethod.POST, tokenBaseUrl);
 
         optOAuthResponseVO.ifPresent(
                 oAuthResponse -> {
@@ -307,7 +309,7 @@ public class AppleOauth implements SocialOauth{
         params.add("grant_type", "refresh_token");
         params.add("refresh_token", refreshToken);
 
-        return getPostOAuthResponse(params, tokenBaseUrl);
+        return getOAuthResponse(params, RequestMethod.POST, tokenBaseUrl);
     }
 
 

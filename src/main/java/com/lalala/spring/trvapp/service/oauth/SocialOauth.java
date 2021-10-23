@@ -14,6 +14,7 @@ import com.lalala.spring.trvapp.vo.oauth.OAuthResponseVO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.util.Optional;
 
@@ -53,10 +54,16 @@ public interface SocialOauth {
         }
     }
 
-    default Optional<OAuthResponseVO> getPostOAuthResponse(MultiValueMap<String, Object> params, String url) {
+    default Optional<OAuthResponseVO> getOAuthResponse(MultiValueMap<String, Object> params, RequestMethod requestMethod, String url) {
 
         HttpClientUtils httpClientUtils = new HttpClientUtils();
-        Optional<ResponseEntity<String>> optionalResponseEntity = httpClientUtils.doPostResponseEntity(params, url);
+        Optional<ResponseEntity<String>> optionalResponseEntity;
+
+        if(requestMethod == RequestMethod.GET){
+            optionalResponseEntity = httpClientUtils.doGetResponseEntity(params.toSingleValueMap(), url);
+        } else {
+            optionalResponseEntity = httpClientUtils.doPostResponseEntity(params, url);
+        }
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE);

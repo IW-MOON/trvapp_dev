@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -55,7 +56,7 @@ public class GoogleOauth implements SocialOauth {
         params.add("redirect_uri", redirectUrl);
         params.add("grant_type", "authorization_code");
 
-        return getPostOAuthResponse(params, tokenBaseUrl);
+        return getOAuthResponse(params, RequestMethod.POST, tokenBaseUrl);
     }
 
     @Override
@@ -68,7 +69,7 @@ public class GoogleOauth implements SocialOauth {
         params.add("refresh_token", userResponse.getRefreshToken());
         params.add("grant_type", "refresh_token");
 
-        return getPostOAuthResponse(params, tokenBaseUrl);
+        return getOAuthResponse(params, RequestMethod.POST, tokenBaseUrl);
     }
 
     @Override
