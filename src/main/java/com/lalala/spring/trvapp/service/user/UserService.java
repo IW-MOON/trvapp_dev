@@ -11,6 +11,7 @@ import com.lalala.spring.trvapp.helper.WordsGenerate;
 import com.lalala.spring.trvapp.repository.AuthRepository;
 import com.lalala.spring.trvapp.repository.UserRepository;
 import com.lalala.spring.trvapp.repository.UserTokenRepository;
+import com.lalala.spring.trvapp.service.nickname.NicknameService;
 import com.lalala.spring.trvapp.service.oauth.OauthService;
 import com.lalala.spring.trvapp.type.SocialAuthType;
 import com.lalala.spring.trvapp.vo.oauth.OAuthResponseVO;
@@ -40,6 +41,7 @@ public class UserService {
     private final OauthService oauthService;
     private final JwtTokenProvider jwtTokenProvider;
     private final WordsGenerate wordsGenerate;
+    private final NicknameService nicknameService;
 
 
     public ResponseEntity<UserResponse> auth(SocialAuthType socialAuthType, UserResponse userResponse){
@@ -60,6 +62,9 @@ public class UserService {
                     userRepository.findBySocialUniqId(user.getSocialUniqId());
 
             if(optFindUser.isPresent()){
+
+                User findUser = optFindUser.get();
+
                 this.userLogin(optFindUser, oAuthResponseVO.getRefreshToken());
                 return new ResponseEntity<UserResponse>(
                         UserResponse.builder()
@@ -91,6 +96,7 @@ public class UserService {
 
         User findUser = user.get();
         findUser.updateLastLoginDtm();
+
 
         Optional<UserToken> optUserToken = userTokenRepository.findByUser(findUser);
         optUserToken.ifPresentOrElse(
@@ -165,7 +171,7 @@ public class UserService {
     private void saveUser(SocialAuthType socialAuthType, UserResponse userResponse) {
 
         User user = oauthService.getUserInfo(socialAuthType, userResponse.getIdToken(), userResponse.getAccessToken());
-        String nickName = wordsGenerate.generateNickName();
+        String nickName = nicknameService.generateNickName();
         user.setNickName(nickName);
         log.info(user.toString());
 
