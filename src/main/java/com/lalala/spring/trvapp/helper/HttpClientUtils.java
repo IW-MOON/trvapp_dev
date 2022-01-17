@@ -19,7 +19,6 @@ public class HttpClientUtils {
 
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> responseEntity = null;
-
         try {
 
             responseEntity =
@@ -58,8 +57,7 @@ public class HttpClientUtils {
                     restTemplate.getForEntity(url, String[].class, params );
 
         } catch (Exception e) {
-            e.printStackTrace();
-            throw new UnAuthorizedException();
+            throw new ServerRuntimeException();
         }
         return Optional.of(responseEntity);
     }

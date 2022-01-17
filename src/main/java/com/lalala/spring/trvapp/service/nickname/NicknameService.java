@@ -1,6 +1,6 @@
 package com.lalala.spring.trvapp.service.nickname;
 
-import com.lalala.spring.trvapp.repository.NicknameRepository;
+import com.lalala.spring.trvapp.repository.nickname.NicknameRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

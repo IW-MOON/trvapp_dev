@@ -6,6 +6,7 @@ ABSPATH=$(readlink -f $0)
 ABSDIR=$(dirname $ABSPATH)
 
 cp /home/ubuntu/app/trvapp/application.yml /home/ubuntu/app/trvapp/trvapp/build/libs/application.yml
+cp /home/ubuntu/app/trvapp/application-oauth.yml /home/ubuntu/app/trvapp/trvapp/build/libs/application-oauth.yml
 source /home/ubuntu/app/trvapp/deploy_env.sh
 
 CURRENT_PORT=$(cat /etc/nginx/conf.d/service_url.inc | grep -Po '[0-9]+' | tail -1)

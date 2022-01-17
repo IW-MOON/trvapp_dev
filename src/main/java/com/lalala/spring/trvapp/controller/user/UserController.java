@@ -1,46 +1,45 @@
 package com.lalala.spring.trvapp.controller.user;
 
 
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import com.lalala.spring.trvapp.dto.UserResponse;
+import com.lalala.spring.trvapp.dto.token.TokenResponse;
+import com.lalala.spring.trvapp.dto.oauth.OAuthResponse;
+import com.lalala.spring.trvapp.config.oauth.AuthConfig;
+import com.lalala.spring.trvapp.entity.token.Token;
+import com.lalala.spring.trvapp.entity.user.User;
+import com.lalala.spring.trvapp.interceptor.AuthenticationPrincipal;
 import com.lalala.spring.trvapp.service.user.UserService;
 import com.lalala.spring.trvapp.type.SocialAuthType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataAccessException;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import javax.annotation.Nullable;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
 
 @Slf4j
 @RestController
-@CrossOrigin(maxAge = 3600)
+//@CrossOrigin(maxAge = 3600)
 @RequestMapping(value = "user")
 @RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
 
-    /*
-    * (Apple) Login 유저 정보를 받은 후 권한 생성
-    *
-    * @param serviceResponse
-    * @return
-    * */
-    // 로그인
-    //CrossOrigin(origins = "http://localhost:8080")
-    @RequestMapping( value = "/auth/{socialLoginType}", method = {RequestMethod.GET, RequestMethod.POST})
-    public ResponseEntity<UserResponse> callback(
+    @RequestMapping( value = "/auth/{socialLoginType}", method = {RequestMethod.POST})
+    public ResponseEntity callback(
             @PathVariable(name = "socialLoginType") SocialAuthType socialAuthType,
             @RequestParam Map<String, Object> responseMap
     )
     {
-        System.out.println("socialAuthType = " + socialAuthType);
         ObjectMapper mapper = new ObjectMapper();
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
@@ -48,31 +47,38 @@ public class UserController {
             mapper.setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE);
         }
 
-        UserResponse userResponse = mapper.convertValue(responseMap, UserResponse.class);
-        return userService.auth(socialAuthType, userResponse);
+        OAuthResponse OAuthResponse = mapper.convertValue(responseMap, OAuthResponse.class);
+        TokenResponse tokenResponse =  userService.auth(socialAuthType, OAuthResponse);
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.add(AuthConfig.HEADER_NAME_TOKEN_AUTH, tokenResponse.getToken());
+        httpHeaders.add(AuthConfig.HEADER_NAME_TOKEN_REFRESH, tokenResponse.getRefreshToken());
+
+        return new ResponseEntity(httpHeaders, HttpStatus.OK);
     }
 
     @PostMapping( value = "/join/{socialLoginType}")
-    public ResponseEntity<UserResponse> join(
+    public ResponseEntity<Void> join(
             @PathVariable(name = "socialLoginType") SocialAuthType socialAuthType,
-            UserResponse userResponse
+            @AuthenticationPrincipal @Nullable Object object
     ) {
         log.info(socialAuthType.toString());
-        log.info(userResponse.toString());
 
-        return userService.join(socialAuthType, userResponse);
-    }
-
-    @PostMapping(value = "/auth/{socialLoginType}/refresh_token")
-    public ResponseEntity<UserResponse> refreshToken(
-            @PathVariable(name = "socialLoginType") SocialAuthType socialAuthType,
-            UserResponse userResponse
-    ) {
-        if (socialAuthType == SocialAuthType.FACEBOOK) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        if(object instanceof User){
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
-        return userService.refreshToken(socialAuthType, userResponse);
+        if (object instanceof String) {
+            String token = (String) object;
+            TokenResponse tokenResponse = userService.join(socialAuthType, new Token(token));
+
+            HttpHeaders httpHeaders = new HttpHeaders();
+            httpHeaders.add(AuthConfig.HEADER_NAME_TOKEN_AUTH, tokenResponse.getToken());
+            httpHeaders.add(AuthConfig.HEADER_NAME_TOKEN_REFRESH, tokenResponse.getRefreshToken());
+            return new ResponseEntity<>(httpHeaders, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
+
 
     @GetMapping(value = "/check")
     public ResponseEntity check(
@@ -85,11 +91,21 @@ public class UserController {
     }
 
     @PostMapping(value = "/endpoint")
-    public ResponseEntity<UserResponse> endpoint(String payload)
+    public ResponseEntity<OAuthResponse> endpoint(String payload)
     {
         log.info(payload);
         userService.processEndpoint(payload);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @ExceptionHandler(DataAccessException.class)
+    public ResponseEntity handleDataAccessException(DataAccessException e) {
+        return ResponseEntity.badRequest().build();
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity handleIllegalArgumentException(DataAccessException e) {
+        return ResponseEntity.badRequest().build();
     }
 }
 

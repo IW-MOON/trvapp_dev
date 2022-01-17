@@ -22,7 +22,7 @@ public class WordsGenerate {
     private final String wordsNounUri = "/random/noun";
     private final String wordsAdjectiveUri = "/random/adjective";
 
-    public String generateNickName() throws ServerRuntimeException{
+    public String generateNickName() {
 
         StringBuffer nickName = new StringBuffer();
         Map<String, String> map = new LinkedHashMap<>();

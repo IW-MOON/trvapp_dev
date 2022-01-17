@@ -1,13 +1,14 @@
 package com.lalala.spring.trvapp.service.oauth;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import com.lalala.spring.trvapp.dto.UserResponse;
-import com.lalala.spring.trvapp.entity.User;
+import com.lalala.spring.trvapp.dto.token.RefreshTokenRequest;
+import com.lalala.spring.trvapp.dto.oauth.OAuthResponse;
+import com.lalala.spring.trvapp.entity.user.User;
 import com.lalala.spring.trvapp.exception.ServerRuntimeException;
-import com.lalala.spring.trvapp.exception.UnAuthorizedException;
 import com.lalala.spring.trvapp.helper.HttpClientUtils;
 import com.lalala.spring.trvapp.type.SocialAuthType;
 import com.lalala.spring.trvapp.vo.oauth.OAuthResponseVO;
@@ -22,7 +23,7 @@ public interface SocialOauth {
 
     /**
      * 각 Social Login 페이지로 Redirect 처리할 URL Build
-     * 사용자로부터 로그인 요청을 받아 Social Login Server 인증용 code 요
+     * 사용자로부터 로그인 요청을 받아 Social Login Server 인증용 code 요청
      */
     String getOauthRedirectURL();
 
@@ -32,8 +33,8 @@ public interface SocialOauth {
      * @return API 서버로 부터 응답받은 Json 형태의 결과를 string으로
      */
 
-    Optional<OAuthResponseVO> requestAccessToken(UserResponse userResponse);
-    Optional<OAuthResponseVO> refreshAccessToken(UserResponse userResponse);
+    OAuthResponseVO requestAccessToken(OAuthResponse OAuthResponse);
+    OAuthResponseVO refreshAccessToken(RefreshTokenRequest refreshTokenRequest);
 
     User getUserInfo(String idToken, String accessToken);
 
@@ -55,14 +56,15 @@ public interface SocialOauth {
         }
     }
 
-    default Optional<OAuthResponseVO> getOAuthResponse(MultiValueMap<String, String> params, RequestMethod requestMethod, String url) {
+    default OAuthResponseVO getOAuthResponse(MultiValueMap<String, String> params, RequestMethod requestMethod, String url)  {
 
         HttpClientUtils httpClientUtils = new HttpClientUtils();
-        Optional<ResponseEntity<String>> optionalResponseEntity;
+        Optional<ResponseEntity<String>> optionalResponseEntity = Optional.empty();
 
         if(requestMethod == RequestMethod.GET){
             optionalResponseEntity = httpClientUtils.doGetResponseEntity(params, url);
-        } else {
+        }
+        if(requestMethod == RequestMethod.POST){
             optionalResponseEntity = httpClientUtils.doPostResponseEntity(params, url);
         }
 
@@ -70,21 +72,15 @@ public interface SocialOauth {
         mapper.setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE);
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
-        return optionalResponseEntity.map(
-                responseEntity -> {
-                    try {
-                        if (responseEntity.getStatusCode() == HttpStatus.OK) {
-                            OAuthResponseVO oAuthResponse = mapper.readValue(responseEntity.getBody(), new TypeReference<OAuthResponseVO>() {
-                            });
-                            return Optional.ofNullable(oAuthResponse);
-                        }
-                    } catch (Exception e){
-                        e.printStackTrace();
-                        throw new ServerRuntimeException();
-                    }
-                    throw new UnAuthorizedException();
-                }
-
-        ).orElseThrow(UnAuthorizedException::new);
+        ResponseEntity<String> responseEntity = optionalResponseEntity.orElseThrow(IllegalArgumentException::new);
+        if (responseEntity.getStatusCode() == HttpStatus.OK) {
+            try {
+                return mapper.readValue(responseEntity.getBody(), new TypeReference<OAuthResponseVO>() {
+                });
+            } catch (JsonProcessingException e) {
+                throw new ServerRuntimeException();
+            }
+        }
+        throw new ServerRuntimeException();
     }
 }
