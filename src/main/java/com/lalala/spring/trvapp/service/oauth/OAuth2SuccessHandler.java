@@ -51,7 +51,7 @@ public class OAuth2SuccessHandler extends SavedRequestAwareAuthenticationSuccess
         writeTokenResponse(response, tokenResponse);
 
         clearAuthenticationAttributes(request, response);
-        getRedirectStrategy().sendRedirect(request, response, targetUrl);
+        //getRedirectStrategy().sendRedirect(request, response, targetUrl);
     }
 
     private void writeTokenResponse(HttpServletResponse response, TokenResponse tokenResponse) {
