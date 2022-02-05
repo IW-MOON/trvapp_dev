@@ -6,6 +6,7 @@ ABSPATH=$(readlink -f $0)
 ABSDIR=$(dirname $ABSPATH)
 
 cp /home/ubuntu/app/trvapp/keystore.jks /home/ubuntu/app/trvapp/trvapp/keystore.jks
+cp /home/ubuntu/app/trvapp/keystore.pkcs12 /home/ubuntu/app/trvapp/trvapp/keystore.pkcs12
 cp /home/ubuntu/app/trvapp/application.yml /home/ubuntu/app/trvapp/trvapp/build/libs/application.yml
 cp /home/ubuntu/app/trvapp/application-oauth.yml /home/ubuntu/app/trvapp/trvapp/build/libs/application-oauth.yml
 source /home/ubuntu/app/trvapp/deploy_env.sh
