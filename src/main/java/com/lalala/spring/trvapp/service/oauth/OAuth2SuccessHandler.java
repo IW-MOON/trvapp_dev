@@ -1,7 +1,6 @@
 package com.lalala.spring.trvapp.service.oauth;
 
 import com.lalala.spring.trvapp.config.oauth.AuthConfig;
-import com.lalala.spring.trvapp.dto.oauth.OAuth2Attribute;
 import com.lalala.spring.trvapp.dto.oauth.OAuthUserResponse;
 import com.lalala.spring.trvapp.dto.token.TokenResponse;
 import com.lalala.spring.trvapp.entity.role.RoleType;
@@ -13,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -51,13 +49,16 @@ public class OAuth2SuccessHandler extends SavedRequestAwareAuthenticationSuccess
         writeTokenResponse(response, tokenResponse);
 
         clearAuthenticationAttributes(request, response);
-        //getRedirectStrategy().sendRedirect(request, response, targetUrl);
+        getRedirectStrategy().sendRedirect(request, response, targetUrl);
     }
 
     private void writeTokenResponse(HttpServletResponse response, TokenResponse tokenResponse) {
         response.addHeader(AuthConfig.HEADER_NAME_TOKEN_AUTH, tokenResponse.getToken());
         response.addHeader(AuthConfig.HEADER_NAME_TOKEN_REFRESH, tokenResponse.getRefreshToken());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+
+        httpCookieOAuth2AuthorizationRequestRepository.saveAuthParameter(response, AuthConfig.HEADER_NAME_TOKEN_AUTH, tokenResponse.getToken());
+        httpCookieOAuth2AuthorizationRequestRepository.saveAuthParameter(response, AuthConfig.HEADER_NAME_TOKEN_REFRESH, tokenResponse.getRefreshToken());
     }
 
     //token을 생성하고 이를 포함한 프론트엔드로의 uri를 생성한다.

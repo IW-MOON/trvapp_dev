@@ -48,4 +48,10 @@ public class HttpCookieOAuth2AuthorizationRequestRepository  implements Authoriz
         CookieUtils.deleteCookie(request, response, OAUTH2_AUTHORIZATION_REQUEST_COOKIE_NAME);
         CookieUtils.deleteCookie(request, response, REDIRECT_URI_PARAM_COOKIE_NAME);
     }
+
+    public void saveAuthParameter(HttpServletResponse response, String name, String value) {
+        if (StringUtils.isNotBlank(value)) {
+            CookieUtils.addCookie(response, name, value, cookieExpireSeconds);
+        }
+    }
 }
