@@ -36,6 +36,9 @@ public class SecurityConfig  extends WebSecurityConfigurerAdapter {
     @Autowired
     private JwtAuthFilter jwtAuthFilter;
 
+    public static final String[] ALLOWED_URI_ANTMATCHERS = new String[]{"/oauth2/**", "/login/**", "/token/**", "/swagger-ui.html", "/swagger/**", "/swagger-resources/**", "/webjars/**", "/v2/api-docs/**"};
+    public static final String[] ALLOWED_URI_PATTERN = new String[]{"/oauth2", "/login", "/token", "/swagger-ui", "/swagger", "/swagger-resources", "/webjars", "/v2/api-docs"};
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 
@@ -48,7 +51,7 @@ public class SecurityConfig  extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                     .authorizeRequests()// URL별 권한 권리
-                    .antMatchers("/oauth2/**", "/login/**", "/token/**").permitAll()
+                    .antMatchers(ALLOWED_URI_ANTMATCHERS).permitAll()
                     //.antMatchers("/token/**").permitAll()
                     //.antMatchers("/user/join/**").permitAll()
                     //.anyRequest().permitAll()// anyRequest : 설정된 값들 이외 나머지 URL 나타냄, authenticated : 인증된 사용자
